@@ -8,4 +8,4 @@
   
 3. Run file web_server.py
 4. Visit the address you specified in the web_server.config file
-   Default: http://localhost:8080
+   <br>Default: http://localhost:8080
