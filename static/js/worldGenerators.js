@@ -1,15 +1,15 @@
 import { validateFunction, validateObject } from './dataValidator.js'
 import PerlinNoise from './PerlinNoise.js'
 import WorldCell from './WorldCell.js'
-import Air from './Air.js'
-import Dirt from './Dirt.js'
-import Grass from './Grass.js'
-import Leaves from './Leaves.js'
-import Stone from './Stone.js'
+import Air from './blocks/Air.js'
+import Dirt from './blocks/Dirt.js'
+import Grass from './blocks/Grass.js'
+import Leaves from './blocks/Leaves.js'
+import Stone from './blocks/Stone.js'
 import random from './random.js'
-import Log from './Log.js'
-import Cobblestone from './Cobblestone.js'
-import IronOre from './IronOre.js'
+import Log from './blocks/Log.js'
+import Cobblestone from './blocks/Cobblestone.js'
+import IronOre from './blocks/IronOre.js'
 
 export function defaultWorld(params = {}) {
     validateObject(params, 'World generator parameters')
@@ -227,19 +227,19 @@ export function defaultWorld(params = {}) {
             }
         }
 
-        let caveGroundLevels = []
-        for (let i = 0; i < width; i++) {
-            caveGroundLevels[i] = getCaveGroundLevels(i, groundLevel[i] + 1)
-            for (const y of caveGroundLevels[i]) {
-                worldMatrix[i][y].block = new Dirt()
-            }
-        }
-
         for (const cave of getCaves(worldMatrix, groundLevel)) {
             if (cave.length < 8) {
                 cave.forEach(coordinates => {
                     worldMatrix[coordinates[0]][coordinates[1]].block = new Stone()
                 })
+            }
+        }
+
+        let caveGroundLevels = []
+        for (let i = 0; i < width; i++) {
+            caveGroundLevels[i] = getCaveGroundLevels(i, groundLevel[i] + 1)
+            for (const y of caveGroundLevels[i]) {
+                worldMatrix[i][y].block = new Dirt()
             }
         }
         
