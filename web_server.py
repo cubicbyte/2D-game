@@ -34,5 +34,3 @@ if __name__ == '__main__':
         host = config['WEB_SERVER']['Host'],
         port = config['WEB_SERVER']['Port']
     )
-
-print("12345"[-2:])
