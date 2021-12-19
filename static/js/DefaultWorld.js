@@ -98,7 +98,7 @@ export default class DefaultWorld extends World {
             validatePositiveInteger(x, 'Cell X position')
             validatePositiveInteger(y, 'Cell Y position')
             validateWithinMatrix(this.#worldMatrix, x, y, 'World matrix')
-            this.#updateNearestBlocks(x, y, ignoreCurrent)
+            this.#updateNearestBlocks(x, y)
         }
 
         #updateCell(x, y) {
