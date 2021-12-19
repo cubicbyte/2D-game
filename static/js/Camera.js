@@ -32,9 +32,7 @@ export default class Camera {
                 })
             }
             
-            requestAnimationFrame(() => {
-                this.#render()
-            })
+            requestAnimationFrame(this.#render.bind(this))
         }
 
         static addRenderer(renderer) {
