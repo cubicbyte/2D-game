@@ -2,6 +2,7 @@ import sleep from './sleep.js'
 import checkColl from './checkColl.js'
 import DefaultWorld from './DefaultWorld.js'
 import Camera from './Camera.js'
+import Water from './blocks/Water.js'
 import Dirt from './blocks/Dirt.js'
 import Log from './blocks/Log.js'
 import Leaves from './blocks/Leaves.js'
@@ -73,6 +74,8 @@ await world.generateWorld(defaultWorld({
     groundAltitudeOffset: 0
 }))
 
+world.worldData.placeBlock(4, 4, new Water())
+
 console.log(`Генерация мира окончена. Время: ${Date.now() - start}мс`)
 
 start = Date.now()
@@ -137,6 +140,7 @@ const GUIRenderer = new Renderer(function(ctx, { width, height }) {
     X: ${camera.position.x}
     Y: ${camera.position.y}
     Cursor: ${getCellIndex(...cursorPosition)}
+    Update_buffer: ${world.worldData.update.updateBuffer.length}
     `, 5, 15)
 
     cameraStick.draw(ctx)
@@ -218,7 +222,11 @@ GUIRenderer.canvas.addEventListener('click', event => {
     event.preventDefault()
     const cell = world.worldData.worldMatrix[cellIndex[0]][cellIndex[1]]
 
-    if (event.shiftKey) {
+    if (event.altKey) {
+        if (cell.block === null) {
+            world.worldData.placeBlock(...cellIndex, new Water())
+        }
+    } else if (event.shiftKey) {
         if (cell.block === null) {
             world.worldData.placeBlock(...cellIndex, new Sand())
         }
