@@ -19,7 +19,7 @@ export function validateBoolean(object, description = 'Flag') {
 export function validateInteger(object, description = 'Data') {
     const objectType = typeof object
     const isInteger = Number.isInteger(object)
-    const errorText = `${description} must be an integer.${objectType !== 'number' ? ` Received type: ${objectType}` : ''}`
+    const errorText = `${description} must be an integer.${objectType !== 'number' ? ` Received type: ${objectType}` : ` Received: ${object}`}`
 
     if (!isInteger) {
         throw new TypeError(errorText)
