@@ -103,15 +103,15 @@ export default class DefaultWorld extends World {
 
         #updateCell(x, y) {
             const cell = this.#worldMatrix[x][y]
-            const pos = `${x}:${y}`
-            const registeredPositions = this.#update.updateBuffer.map(object => object.pos)
+            const key = `pos:${x}.${y}`
+            const registeredPositions = this.#update.updateBuffer.map(object => object.key)
 
-            if (registeredPositions.includes(pos)) {
+            if (registeredPositions.includes(key)) {
                 return false
             }
 
             this.#update.addToBuffer({
-                pos: pos,
+                key,
                 callback: () => cell.update(this, x, y)
             })
         }
