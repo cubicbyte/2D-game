@@ -20,7 +20,7 @@ export default class Camera {
                 this.#zoom = value.toFixed(2)
             }
             static set enabled(flag) {
-                validateBoolean(flag)
+                validateBoolean(flag, 'Rendering state')
                 this.#enabled = flag
             }
         }
