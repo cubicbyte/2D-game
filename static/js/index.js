@@ -1,19 +1,21 @@
 import sleep from './sleep.js'
-import World from './World.js'
+import checkColl from './checkColl.js'
+import DefaultWorld from './DefaultWorld.js'
 import Camera from './Camera.js'
-import Air from './blocks/Air.js'
 import Dirt from './blocks/Dirt.js'
 import Log from './blocks/Log.js'
 import Leaves from './blocks/Leaves.js'
 import Stone from './blocks/Stone.js'
-import Grass from './blocks/Grass.js'
 import IronOre from './blocks/IronOre.js'
 import Cobblestone from './blocks/Cobblestone.js'
+import Bedrock from './blocks/Bedrock.js'
 import Renderer from './Renderer.js'
 import Control from './Control.js'
 import Stick from './Stick.js'
 import HZCounter from './HzCounter.js'
 import { defaultWorld } from './worldGenerators.js'
+import Grass from './blocks/Grass.js'
+import Air from './blocks/Air.js'
 
 const progress = document.querySelector('.loader progress')
 const progressTitle = document.querySelector('.loader p')
@@ -47,10 +49,12 @@ let start = Date.now()
 console.log('Генерация мира...')
 progressTitle.innerText = 'Генерация мира...'
 
-const world = new World({
-    size: {
-        width: 96,
-        height: 48
+const world = new DefaultWorld({
+    parameters: {
+        size: {
+            width: 48,
+            height: 32
+        }
     }
 })
 
@@ -63,7 +67,8 @@ await world.generateWorld(defaultWorld({
             current += accuracy
             await sleep()
         }
-    }
+    },
+    groundAltitudeOffset: 0
 }))
 
 console.log(`Генерация мира окончена. Время: ${Date.now() - start}мс`)
@@ -77,6 +82,7 @@ await Leaves.LoadTexture()
 await Stone.LoadTexture()
 await IronOre.LoadTexture()
 await Cobblestone.LoadTexture()
+await Bedrock.LoadTexture()
 
 current = 0
 await world.updateTextures({
@@ -105,6 +111,20 @@ const cameraControl = new Control({
 const hzCounter = new HZCounter()
 const worldRenderer = Camera.DefaultWorldRenderer(world, camera)
 const GUIRenderer = new Renderer(function(ctx, { width, height }) {
+    const drawImage = (texture, x, y, width, height) => {
+        ctx.drawImage(
+            texture,
+            0,
+            0,
+            texture.width,
+            texture.height,
+            x,
+            y,
+            width,
+            height
+        )
+    }
+
     ctx.clearRect(0, 0, width, height)
 
     ctx.fillStyle = '#000000'
@@ -120,15 +140,24 @@ const GUIRenderer = new Renderer(function(ctx, { width, height }) {
     cameraControl.update()
     hzCounter.update()
 
-    let texture = picked ? picked.texture.texture : new Image()
-    ctx.drawImage(
+    const texture = picked ? picked.texture.texture : new Image(16, 16)
+    const x = width - texture.width * 4 - 16
+    const y = height - texture.height * 4 - 16
+
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'
+    ctx.fillRect(
+        x - 4,
+        y - 4,
+        texture.width * 4 + 8,
+        texture.height * 4 + 8
+    )
+
+    ctx.clearRect(x, y, texture.width * 4, texture.height * 4)
+
+    drawImage(
         texture,
-        0,
-        0,
-        texture.width,
-        texture.height,
-        width - texture.width * 4 - 16,
-        height - texture.height * 4 - 16,
+        x,
+        y,
         texture.width * 4,
         texture.height * 4
     )
@@ -136,14 +165,42 @@ const GUIRenderer = new Renderer(function(ctx, { width, height }) {
 
 camera.rendering.addRenderer(worldRenderer)
 camera.rendering.addRenderer(GUIRenderer)
-camera.rendering.parameters.zoom = Number((Math.max(innerWidth, innerHeight) / 512).toFixed(2))
+camera.rendering.parameters.zoom = camera.rendering.parameters.defaultZoom
+camera.position.moveTo(world.worldData.width * 8, world.worldData.height * 8)
 cameraStick.element = GUIRenderer.canvas
 cameraStick.x = 120
 cameraStick.y = GUIRenderer.canvas.height - 120
 
-let picked = new Dirt()
+let picked = Dirt
 
 GUIRenderer.canvas.addEventListener('click', event => {
+    const { width, height } = GUIRenderer.canvas
+    const { layerX: x, layerY: y } = event
+
+    const texture = picked ? picked.texture.texture : new Image(16, 16)
+    const isColl = checkColl(
+        {
+            x: width - texture.width * 4 - 16,
+            y: height - texture.height * 4 - 16,
+            width: texture.width * 4,
+            height: texture.height * 4
+        },
+        {
+            x,
+            y,
+            width: 1,
+            height: 1
+        }
+    )
+
+    if (isColl) {
+        event.preventDefault()
+
+        camera.rendering.parameters.enabled = !camera.rendering.parameters.enabled
+
+        return
+    }
+
     const cellIndex = getCellIndex(event.layerX, event.layerY)
 
     if (
@@ -158,9 +215,16 @@ GUIRenderer.canvas.addEventListener('click', event => {
     event.preventDefault()
     const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
 
-    if (cell.block !== null) {
-        cell.block = null
-        cell.texture.update()
+    if (event.ctrlKey) {
+        if (cell.wall !== null) {
+            cell.wall = null
+            cell.texture.update()
+        }
+    } else {
+        if (cell.block !== null) {
+            cell.block = null
+            cell.texture.update()
+        }
     }
 })
 
@@ -179,7 +243,7 @@ GUIRenderer.canvas.addEventListener('mousedown', event => {
         }
 
         const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
-        picked = cell.block
+        picked = event.ctrlKey ? cell.wall : cell.block
     }
 })
 
@@ -198,24 +262,35 @@ GUIRenderer.canvas.addEventListener('contextmenu', event => {
     event.preventDefault()
     const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
 
-    if (!cell.block) {
-        cell.block = picked
-        cell.texture.update()
+    if (event.ctrlKey) {
+        if (cell.wall === null) {
+            cell.wall = picked
+            cell.texture.update()
+        }
+    } else {
+        if (cell.block === null) {
+            cell.block = picked
+            cell.texture.update()
+        }
     }
 })
 
 window.addEventListener('resize', () => {
+    if (!camera.rendering.parameters.enabled) {
+        return
+    }
+    
     const wrapper = document.querySelector('.canvas-wrapper')
 
-    wrapper.style.width = window.innerWidth + 'px'
-    wrapper.style.height = window.innerHeight + 'px'
+    wrapper.style.width = innerWidth + 'px'
+    wrapper.style.height = innerHeight - 1 + 'px'
 
     wrapper.childNodes.forEach(canvas => {
         canvas.width = innerWidth
         canvas.height = innerHeight
     })
 
-    camera.rendering.parameters.zoom = Number((Math.max(innerWidth, innerHeight) / 512).toFixed(2))
+    camera.rendering.parameters.zoom = camera.rendering.parameters.defaultZoom
     cameraStick.y = GUIRenderer.canvas.height - 120
 })
 
