@@ -103,6 +103,15 @@ export function validateWithinMatrix(matrix, x, y, description = 'Matrix') {
     }
 }
 
+export function validateIntegerRange(number, from, to, description = 'Number') {
+    validateInteger(number, description)
+    const errorText = `${description} must be in the range from ${from} to ${to}. Received value: ${number}`
+
+    if (number < from || number > to) {
+        throw new Error(errorText)
+    }
+}
+
 export function isPositiveInteger(object) {
     return Number.isInteger(object) && object >= 0
 }
