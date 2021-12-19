@@ -118,12 +118,12 @@ export default class Water extends Block {
         _hasGravity: true,
         _level: value => {
             value -= value % Water.LEVEL_STEP
-            validateIntegerRange(value, Water.#MIN_LEVEL, Water.#MAX_LEVEL, 'Water level')
+            validateIntegerRange(value, Water.MIN_LEVEL, Water.MAX_LEVEL, 'Water level')
             return value
         }
     })
 
-    constructor(level = Water.#MAX_LEVEL) {
+    constructor(level = Water.MAX_LEVEL - Water.LEVEL_STEP * 2) {
         function removeEmpty(type, worldData, x, y) {
             if (type !== 'block') {
                 return false
@@ -136,7 +136,7 @@ export default class Water extends Block {
         }
 
         super([removeEmpty, Water.#update])
-        this.#properties.level = 200
+        this.#properties.level = level
 
         this.#texture = new Texture().create((ctx, canvas, params) => {
             if (!isPositiveInteger(params.size)) {

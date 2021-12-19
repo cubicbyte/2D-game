@@ -179,7 +179,7 @@ cameraStick.element = GUIRenderer.canvas
 cameraStick.x = 120
 cameraStick.y = GUIRenderer.canvas.height - 120
 
-let picked = new Dirt()
+let picked = Dirt
 let cursorPosition = [0, 0]
 
 GUIRenderer.canvas.addEventListener('mousemove', event => {
@@ -252,7 +252,14 @@ GUIRenderer.canvas.addEventListener('mousedown', event => {
         }
 
         const cell = world.worldData.worldMatrix[cellIndex[0]][cellIndex[1]]
-        picked = event.ctrlKey ? cell.wall : cell.block
+        picked =
+            event.ctrlKey
+                ? cell.wall
+                    ? cell.wall.constructor
+                    : null
+                : cell.block
+                    ? cell.block.constructor
+                    : null
     }
 })
 
@@ -268,12 +275,12 @@ GUIRenderer.canvas.addEventListener('contextmenu', event => {
 
     if (event.ctrlKey) {
         if (cell.wall === null) {
-            cell.wall = picked
+            cell.wall = new picked()
             cell.texture.update()
         }
     } else {
         if (cell.block === null) {
-            world.worldData.placeBlock(...cellIndex, picked)
+            world.worldData.placeBlock(...cellIndex, new picked())
         }
     }
 })
