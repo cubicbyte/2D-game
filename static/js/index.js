@@ -9,6 +9,7 @@ import Stone from './blocks/Stone.js'
 import IronOre from './blocks/IronOre.js'
 import Cobblestone from './blocks/Cobblestone.js'
 import Bedrock from './blocks/Bedrock.js'
+import Sand from './blocks/Sand.js'
 import Renderer from './Renderer.js'
 import Control from './Control.js'
 import Stick from './Stick.js'
@@ -16,13 +17,14 @@ import HZCounter from './HzCounter.js'
 import { defaultWorld } from './worldGenerators.js'
 import Grass from './blocks/Grass.js'
 import Air from './blocks/Air.js'
+import { isWithinMatrix } from './dataValidator.js'
 
 const progress = document.querySelector('.loader progress')
 const progressTitle = document.querySelector('.loader p')
 
 function getCellIndex(x, y) {
-    return {
-        x: Math.floor(
+    return [
+        Math.floor(
             (
                 x / camera.rendering.parameters.zoom
                 + camera.position.x
@@ -32,7 +34,7 @@ function getCellIndex(x, y) {
                 )
             ) / 16
         ),
-        y: Math.floor(
+        Math.floor(
             (
                 y / camera.rendering.parameters.zoom
                 + camera.position.y
@@ -42,7 +44,7 @@ function getCellIndex(x, y) {
                 )
             ) / 16
         )
-    }
+    ]
 }
 
 let start = Date.now()
@@ -83,6 +85,7 @@ await Stone.LoadTexture()
 await IronOre.LoadTexture()
 await Cobblestone.LoadTexture()
 await Bedrock.LoadTexture()
+await Sand.LoadTexture()
 
 current = 0
 await world.updateTextures({
@@ -133,6 +136,7 @@ const GUIRenderer = new Renderer(function(ctx, { width, height }) {
     Zoom: ${camera.rendering.parameters.zoom}
     X: ${camera.position.x}
     Y: ${camera.position.y}
+    Cursor: ${getCellIndex(...cursorPosition)}
     `, 5, 15)
 
     cameraStick.draw(ctx)
@@ -171,7 +175,12 @@ cameraStick.element = GUIRenderer.canvas
 cameraStick.x = 120
 cameraStick.y = GUIRenderer.canvas.height - 120
 
-let picked = Dirt
+let picked = new Dirt()
+let cursorPosition = [0, 0]
+
+GUIRenderer.canvas.addEventListener('mousemove', event => {
+    cursorPosition = [event.layerX, event.layerY]
+})
 
 GUIRenderer.canvas.addEventListener('click', event => {
     const { width, height } = GUIRenderer.canvas
@@ -195,35 +204,32 @@ GUIRenderer.canvas.addEventListener('click', event => {
 
     if (isColl) {
         event.preventDefault()
-
         camera.rendering.parameters.enabled = !camera.rendering.parameters.enabled
-
+        world.worldData.update.parameters.enabled = camera.rendering.parameters.enabled
         return
     }
 
     const cellIndex = getCellIndex(event.layerX, event.layerY)
 
-    if (
-        cellIndex.x >= world.worldData.width ||
-        cellIndex.y >= world.worldData.height ||
-        cellIndex.x < 0 ||
-        cellIndex.y < 0
-    ) {
+    if (!isWithinMatrix(world.worldData.worldMatrix, ...cellIndex)) {
         return
     }
 
     event.preventDefault()
-    const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
+    const cell = world.worldData.worldMatrix[cellIndex[0]][cellIndex[1]]
 
-    if (event.ctrlKey) {
+    if (event.shiftKey) {
+        if (cell.block === null) {
+            world.worldData.placeBlock(...cellIndex, new Sand())
+        }
+    } else if (event.ctrlKey) {
         if (cell.wall !== null) {
             cell.wall = null
             cell.texture.update()
         }
     } else {
         if (cell.block !== null) {
-            cell.block = null
-            cell.texture.update()
+            world.worldData.placeBlock(...cellIndex, null)
         }
     }
 })
@@ -233,16 +239,11 @@ GUIRenderer.canvas.addEventListener('mousedown', event => {
         event.preventDefault()
         const cellIndex = getCellIndex(event.layerX, event.layerY)
 
-        if (
-            cellIndex.x >= world.worldData.width ||
-            cellIndex.y >= world.worldData.height ||
-            cellIndex.x < 0 ||
-            cellIndex.y < 0
-        ) {
+        if (!isWithinMatrix(world.worldData.worldMatrix, ...cellIndex)) {
             return
         }
 
-        const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
+        const cell = world.worldData.worldMatrix[cellIndex[0]][cellIndex[1]]
         picked = event.ctrlKey ? cell.wall : cell.block
     }
 })
@@ -250,17 +251,12 @@ GUIRenderer.canvas.addEventListener('mousedown', event => {
 GUIRenderer.canvas.addEventListener('contextmenu', event => {
     const cellIndex = getCellIndex(event.layerX, event.layerY)
     
-    if (
-        cellIndex.x >= world.worldData.width ||
-        cellIndex.y >= world.worldData.height ||
-        cellIndex.x < 0 ||
-        cellIndex.y < 0
-    ) {
+    if (!isWithinMatrix(world.worldData.worldMatrix, ...cellIndex)) {
         return
     }
 
     event.preventDefault()
-    const cell = world.worldData.worldMatrix[cellIndex.x][cellIndex.y]
+    const cell = world.worldData.worldMatrix[cellIndex[0]][cellIndex[1]]
 
     if (event.ctrlKey) {
         if (cell.wall === null) {
@@ -269,8 +265,7 @@ GUIRenderer.canvas.addEventListener('contextmenu', event => {
         }
     } else {
         if (cell.block === null) {
-            cell.block = picked
-            cell.texture.update()
+            world.worldData.placeBlock(...cellIndex, picked)
         }
     }
 })
