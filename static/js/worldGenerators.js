@@ -38,12 +38,12 @@ export function defaultWorld(params = {}) {
         }
 
         function generateCell(i, j) {
-            const cell = new WorldCell()
+            const cell = new WorldCell
 
-            cell.background = Air
+            cell.background = new Air
 
             if (i === 0 || j === 0 || i === width - 1 || j === height - 1) {
-                cell.block = Bedrock
+                cell.block = new Bedrock
                 return cell
             }
 
@@ -54,18 +54,18 @@ export function defaultWorld(params = {}) {
                 let wall = null
                 
                 if (j - 3 > res) {
-                    block = Stone
-                    wall = Cobblestone
+                    block = new Stone
+                    wall = new Cobblestone
                 } else {
-                    block = Dirt
-                    wall = Dirt
+                    block = new Dirt
+                    wall = new Dirt
                 }
 
                 cell.block = block
                 cell.wall = wall
             } else if (j === res) {
-                cell.block = Grass
-                cell.wall = Dirt
+                cell.block = new Grass
+                cell.wall = new Dirt
             }
 
             return cell
@@ -134,7 +134,7 @@ export function defaultWorld(params = {}) {
 
                 const cell = worldMatrix[x][y]
 
-                if (isInstance(cell.block, Grass, true)) {
+                if (isInstance(cell.block, Grass)) {
                     return y
                 }
 
@@ -177,7 +177,7 @@ export function defaultWorld(params = {}) {
                     continue
                 }
 
-                worldMatrix[x][j].block = Log
+                worldMatrix[x][j].block = new Log
             }
 
             for (let i = x - 2; i < x + 3; i++) {
@@ -192,7 +192,7 @@ export function defaultWorld(params = {}) {
                         continue
                     }
 
-                    worldMatrix[i][j].block = Leaves
+                    worldMatrix[i][j].block = new Leaves
                 }
             }
 
@@ -207,12 +207,12 @@ export function defaultWorld(params = {}) {
                         continue
                     }
 
-                    worldMatrix[i][j].block = Leaves
+                    worldMatrix[i][j].block = new Leaves
                 }
             }
 
-            if (y < height && isInstance(worldMatrix[x][y].block, Grass, true)) {
-                worldMatrix[x][y].block = Dirt
+            if (y < height && isInstance(worldMatrix[x][y].block, Grass)) {
+                worldMatrix[x][y].block = new Dirt
             }
         }
 
@@ -226,7 +226,7 @@ export function defaultWorld(params = {}) {
         for (let x = 1; x < width - 1; x++) {
             for (let y = groundLevel[x] + 4; y < height - 1; y++) {
                 if (PerlinNoise.simplex2(x / 8, (y + height) / 8) > 0.6) {
-                    worldMatrix[x][y].block = IronOre
+                    worldMatrix[x][y].block = new IronOre
                 }
             }
         }
@@ -242,7 +242,7 @@ export function defaultWorld(params = {}) {
         for (const cave of getCaves(worldMatrix, groundLevel)) {
             if (cave.length < 8) {
                 cave.forEach(coordinates => {
-                    worldMatrix[coordinates[0]][coordinates[1]].block = Stone
+                    worldMatrix[coordinates[0]][coordinates[1]].block = new Stone
                 })
             }
         }
@@ -252,7 +252,7 @@ export function defaultWorld(params = {}) {
             caveGroundLevels[i] = getCaveGroundLevels(i, groundLevel[i] + 1)
             for (const y of caveGroundLevels[i]) {
                 if (y + 2 < height && worldMatrix[i][y + 1].block) {
-                    worldMatrix[i][y].block = Dirt
+                    worldMatrix[i][y].block = new Dirt
                 }
             }
         }
