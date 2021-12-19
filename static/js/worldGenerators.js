@@ -1,4 +1,4 @@
-import { validateFunction, validateObject } from './dataValidator.js'
+import { isInstance, validateFunction, validateInteger, validateObject } from './dataValidator.js'
 import PerlinNoise from './PerlinNoise.js'
 import WorldCell from './WorldCell.js'
 import Air from './blocks/Air.js'
@@ -10,15 +10,21 @@ import random from './random.js'
 import Log from './blocks/Log.js'
 import Cobblestone from './blocks/Cobblestone.js'
 import IronOre from './blocks/IronOre.js'
+import Bedrock from './blocks/Bedrock.js'
 
 export function defaultWorld(params = {}) {
     validateObject(params, 'World generator parameters')
 
-    if (params.onprogress) {
-        validateFunction(params.onprogress, 'onprogress callback')
-    } else {
+    if (!params.onprogress) {
         params.onprogress = function() {}
     }
+
+    if (typeof params.groundAltitudeOffset !== 'number') {
+        params.groundAltitudeOffset = 0
+    }
+    
+    validateFunction(params.onprogress, 'onprogress callback')
+    validateInteger(params.groundAltitudeOffset, 'Ground altitude offset')
     
     return async function(width, height) {
         let worldMatrix = []
@@ -33,29 +39,33 @@ export function defaultWorld(params = {}) {
 
         function generateCell(i, j) {
             const cell = new WorldCell()
-            const air = new Air()
 
-            cell.background = air
+            cell.background = Air
 
-            const res = alt(i) + height / 2
+            if (i === 0 || j === 0 || i === width - 1 || j === height - 1) {
+                cell.block = Bedrock
+                return cell
+            }
+
+            const res = alt(i) + height / 2 + params.groundAltitudeOffset
 
             if (j > res) {
                 let block
                 let wall = null
                 
-                if (j - 3 > alt(i) + height / 2) {
-                    block = new Stone()
-                    wall = new Cobblestone()
+                if (j - 3 > res) {
+                    block = Stone
+                    wall = Cobblestone
                 } else {
-                    block = new Dirt()
-                    wall = new Dirt()
+                    block = Dirt
+                    wall = Dirt
                 }
 
                 cell.block = block
                 cell.wall = wall
             } else if (j === res) {
-                const grass = new Grass()
-                cell.block = grass
+                cell.block = Grass
+                cell.wall = Dirt
             }
 
             return cell
@@ -109,7 +119,7 @@ export function defaultWorld(params = {}) {
         }
 
         for (let i = 0; i < width; i++) {
-            worldMatrix[i] = new Array
+            worldMatrix[i] = []
             for (let j = 0; j < height; j++) {
                 worldMatrix[i][j] = generateCell(i, j)
             }
@@ -124,7 +134,7 @@ export function defaultWorld(params = {}) {
 
                 const cell = worldMatrix[x][y]
 
-                if (cell.block instanceof Grass) {
+                if (isInstance(cell.block, Grass, true)) {
                     return y
                 }
 
@@ -158,70 +168,72 @@ export function defaultWorld(params = {}) {
 
         const createTree = (x, y) => {
             for (let j = y - 4; j < y; j++) {
-                if (j < 0 || j >= height) {
+                if (
+                    x <= 0 ||
+                    x >= width - 1 ||
+                    j <= 0 ||
+                    j >= height - 1
+                ) {
                     continue
                 }
 
-                const log = new Log()
-                worldMatrix[x][j].block = log
+                worldMatrix[x][j].block = Log
             }
 
             for (let i = x - 2; i < x + 3; i++) {
                 for (let j = y - 4; j < y - 2; j++) {
                     if (
-                        i < 0 ||
-                        i >= width ||
-                        j < 0 ||
-                        j >= height ||
+                        i <= 0 ||
+                        i >= width - 1 ||
+                        j <= 0 ||
+                        j >= height - 1 ||
                         i === x
                     ) {
                         continue
                     }
 
-                    const leaves = new Leaves()
-                    worldMatrix[i][j].block = leaves
+                    worldMatrix[i][j].block = Leaves
                 }
             }
 
             for (let i = x - 1; i < x + 2; i++) {
-                for (let j = 0; j < 2; j++) {
+                for (let j = y - 6; j < y - 4; j++) {
                     if (
-                        i < 0 ||
-                        i >= width ||
-                        j < 0 ||
-                        j >= height
+                        i <= 0 ||
+                        i >= width - 1 ||
+                        j <= 0 ||
+                        j >= height - 1
                     ) {
                         continue
                     }
 
-                    const leaves = new Leaves()
-                    worldMatrix[i][y - 6 + j].block = leaves
+                    worldMatrix[i][j].block = Leaves
                 }
             }
 
-            if (y < height && worldMatrix[x][y].block instanceof Grass) {
-                worldMatrix[x][y].block = new Dirt()
+            if (y < height && isInstance(worldMatrix[x][y].block, Grass, true)) {
+                worldMatrix[x][y].block = Dirt
             }
         }
 
         
         let groundLevel = []
-        for (let i = 0; i < width; i++) {
+        for (let i = 1; i < width - 1; i++) {
             groundLevel[i] = getGroundLevel(i)
         }
 
         PerlinNoise.seed(Math.random())
-        for (let x = 0; x < width; x++) {
-            for (let y = groundLevel[x] + 4; y < height; y++) {
+        for (let x = 1; x < width - 1; x++) {
+            for (let y = groundLevel[x] + 4; y < height - 1; y++) {
                 if (PerlinNoise.simplex2(x / 8, (y + height) / 8) > 0.6) {
-                    worldMatrix[x][y].block = new IronOre()
+                    worldMatrix[x][y].block = IronOre
                 }
             }
         }
         
-        for (let x = 0; x < width; x++) {
-            for (let y = groundLevel[x]; y < height; y++) {
-                if (PerlinNoise.simplex2(x / 8, y / 8) > 0 && (y - 2 > groundLevel[x] + Math.abs(Math.sin(x / 4) * 6) && y < height - 1 && x > 0 && x < width - 1)) {
+        for (let x = 1; x < width - 1; x++) {
+            for (let y = groundLevel[x]; y < height - 1; y++) {
+                if (PerlinNoise.simplex2(x / 8, y / 8) > 0 && y - 2 > groundLevel[x] + Math.abs(Math.sin(x / 4) * 6)) {
                     worldMatrix[x][y].block = null
                 }
             }
@@ -230,16 +242,18 @@ export function defaultWorld(params = {}) {
         for (const cave of getCaves(worldMatrix, groundLevel)) {
             if (cave.length < 8) {
                 cave.forEach(coordinates => {
-                    worldMatrix[coordinates[0]][coordinates[1]].block = new Stone()
+                    worldMatrix[coordinates[0]][coordinates[1]].block = Stone
                 })
             }
         }
 
         let caveGroundLevels = []
-        for (let i = 0; i < width; i++) {
+        for (let i = 1; i < width - 1; i++) {
             caveGroundLevels[i] = getCaveGroundLevels(i, groundLevel[i] + 1)
             for (const y of caveGroundLevels[i]) {
-                worldMatrix[i][y].block = new Dirt()
+                if (y + 2 < height && worldMatrix[i][y + 1].block) {
+                    worldMatrix[i][y].block = Dirt
+                }
             }
         }
         
