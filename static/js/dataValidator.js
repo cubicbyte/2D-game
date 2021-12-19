@@ -95,6 +95,14 @@ export function validateString(object, description = 'Object') {
     }
 }
 
+export function validateWithinMatrix(matrix, x, y, description = 'Matrix') {
+    const isWithin = isWithinMatrix(matrix, x, y)
+
+    if (!isWithin) {
+        throw new Error(`The index [${x},${y}] is out of the range of ${description}`)
+    }
+}
+
 export function isPositiveInteger(object) {
     return Number.isInteger(object) && object >= 0
 }
@@ -117,9 +125,17 @@ export function isInstance(object, constructor, checkInheritance = false) {
         return instance
     }
 
-    if (object === undefined || object === null) {
+    if (object === undefined || object === null || !object.prototype) {
         return false
     }
 
     return object.prototype instanceof constructor || object.prototype.constructor === constructor
+}
+
+export function isWithinMatrix(matrix, x, y) {
+    const width = matrix.length
+    const height = matrix[0].length
+    const isWithin = x >= 0 && y >= 0 && x < width && y < height
+
+    return isWithin
 }
