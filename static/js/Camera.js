@@ -10,8 +10,9 @@ export default class Camera {
         static #renderersContainer = null
         static #parameters = class {
             static #enabled = true
-            static #zoom = 1
+            static #zoom = this.defaultZoom
 
+            static get defaultZoom() { return Number(Math.max(innerWidth, innerHeight) / 512) }
             static get zoom() { return this.#zoom }
             static get enabled() { return this.#enabled }
             static set zoom(value) {
@@ -80,7 +81,7 @@ export default class Camera {
             const dx = event.deltaX
             const dy = event.deltaY
 
-            if (dx != 0) this.rendering.parameters.zoom = 4
+            if (dx != 0) this.rendering.parameters.zoom = this.rendering.parameters.defaultZoom
             else if (dy > 0) this.rendering.parameters.zoom /= 1.05
             else if (dy < 0) this.rendering.parameters.zoom *= 1.05
         }
