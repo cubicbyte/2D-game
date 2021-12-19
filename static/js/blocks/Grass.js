@@ -34,5 +34,7 @@ export default class Grass extends Block {
         }
     })
 
-    get texture() { return Grass.#DEFAULT_TEXTURE }
+    get texture() { return Grass.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

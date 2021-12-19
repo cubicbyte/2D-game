@@ -8,5 +8,7 @@ export default class Log extends Block {
         delete this.LoadTexture
     }
 
-    get texture() { return Log.#DEFAULT_TEXTURE }
+    get texture() { return Log.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

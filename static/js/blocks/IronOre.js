@@ -8,5 +8,7 @@ export default class IronOre extends Block {
         delete this.LoadTexture
     }
 
-    get texture() { return IronOre.#DEFAULT_TEXTURE }
+    get texture() { return IronOre.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

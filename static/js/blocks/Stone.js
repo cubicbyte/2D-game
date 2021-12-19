@@ -8,5 +8,7 @@ export default class Stone extends Block {
         delete this.LoadTexture
     }
 
-    get texture() { return Stone.#DEFAULT_TEXTURE }
+    get texture() { return Stone.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

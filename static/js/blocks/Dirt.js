@@ -39,5 +39,7 @@ export default class Dirt extends Block {
         }
     })
 
-    get texture() { return Dirt.#DEFAULT_TEXTURE }
+    get texture() { return Dirt.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

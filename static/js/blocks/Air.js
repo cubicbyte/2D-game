@@ -12,5 +12,7 @@ export default class Air extends Block {
         this.setBackground('#87CEEB')
     })
 
-    get texture() { return Air.#DEFAULT_TEXTURE }
+    get texture() { return Air.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

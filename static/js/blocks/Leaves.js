@@ -8,5 +8,7 @@ export default class Leaves extends Block {
         delete this.LoadTexture
     }
 
-    get texture() { return Leaves.#DEFAULT_TEXTURE }
+    get texture() { return Leaves.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }

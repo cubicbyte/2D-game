@@ -8,5 +8,7 @@ export default class Cobblestone extends Block {
         delete this.LoadTexture
     }
 
-    get texture() { return Cobblestone.#DEFAULT_TEXTURE }
+    get texture() { return Cobblestone.texture }
+    
+    static get texture() { return this.#DEFAULT_TEXTURE }
 }
