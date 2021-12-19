@@ -77,11 +77,12 @@ export function validateImage(object, description = 'Data', checkCorrect = true)
     }
 }
 
-export function validateInstance(object, constructor, description = 'Object') {
+export function validateInstance(object, constructor, description = 'Object', checkInheritance = false) {
     validateFunction(constructor)
+    const errorText = `${description} must be instance of ${constructor.name}${checkInheritance ? ' or inherit from it' : ''}. ${typeof object === 'object' ? `Current instance: ${object.constructor.name}` : `Received type: ${typeof object}`}`
     
-    if (!isInstance(object, constructor)) {
-        throw new Error(`${description} must be instance of ${constructor.name}. ${typeof object === 'object' ? `Current instance: ${object.constructor.name}` : `Received type: ${typeof object}`}`)
+    if (!isInstance(object, constructor, checkInheritance)) {
+        throw new Error(errorText)
     }
 }
 
@@ -100,6 +101,16 @@ export function isFunctionAsync(object) {
     return object && object.constructor === asyncFunctionConstructor
 }
 
-export function isInstance(object, constructor) {
-    return object instanceof constructor
+export function isInstance(object, constructor, checkInheritance = false) {
+    const instance = object instanceof constructor
+
+    if (!checkInheritance || instance) {
+        return instance
+    }
+
+    if (object === undefined || object === null) {
+        return false
+    }
+
+    return object.prototype instanceof constructor || object.prototype.constructor === constructor
 }
