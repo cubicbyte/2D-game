@@ -86,6 +86,15 @@ export function validateInstance(object, constructor, description = 'Object', ch
     }
 }
 
+export function validateString(object, description = 'Object') {
+    const objectType = typeof object
+    const errorText = `${description} must be an string. Received type: ${objectType}`
+
+    if (objectType !== 'string') {
+        throw new TypeError(errorText)
+    }
+}
+
 export function isPositiveInteger(object) {
     return Number.isInteger(object) && object >= 0
 }
