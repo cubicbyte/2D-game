@@ -142,6 +142,9 @@ export default class Water extends Block {
             if (!isPositiveInteger(params.size)) {
                 params.size = 16
             }
+            
+            canvas.width = params.size
+            canvas.height = params.size
 
             const levelK = Math.floor(params.size * (this.properties.level / Water.MAX_LEVEL))
 
