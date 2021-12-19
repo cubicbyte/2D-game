@@ -1,6 +1,6 @@
 import { validateString, validateFunction } from './dataValidator.js'
 
-export default class Event {
+export default class EventHandler {
     #event = {}
 
     addEventListener(event, listener) {
@@ -75,7 +75,7 @@ export default class Event {
     }
 }
 
-export class StaticEvent {
+export class StaticEventHandler {
     static #event = {}
     
     static addEventListener(event, listener) {
