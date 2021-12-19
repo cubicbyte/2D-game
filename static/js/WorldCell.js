@@ -55,6 +55,43 @@ export default class WorldCell {
         ctx.fillRect(0, 0, canvas.width, canvas.height)
     })
 
+    update(worldData, x, y) {
+        let updateTexture = false
+
+        const { background, wall, block } = this.#layers
+
+        if (background) {
+            background.event.getEventListeners('update').forEach(updateFunction => {
+                const result = updateFunction('background', worldData, x, y)
+                if (result) {
+                    updateTexture = true
+                }
+            })
+        }
+
+        if (wall) {
+            wall.event.getEventListeners('update').forEach(updateFunction => {
+                const result = updateFunction('wall', worldData, x, y)
+                if (result) {
+                    updateTexture = true
+                }
+            })
+        }
+
+        if (block) {
+            block.event.getEventListeners('update').forEach(updateFunction => {
+                const result = updateFunction('block', worldData, x, y)
+                if (result) {
+                    updateTexture = true
+                }
+            })
+        }
+
+        if (updateTexture) {
+            return this.#texture.update()
+        }
+    }
+
     get texture() { return this.#texture }
     get background() { return this.#layers.background }
     get wall() { return this.#layers.wall }
@@ -63,21 +100,21 @@ export default class WorldCell {
 
     set background(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Background', true)
+            validateInstance(block, Block, 'Background')
         }
         this.#layers.background = block
     }
 
     set wall(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Wall', true)
+            validateInstance(block, Block, 'Wall')
         }
         this.#layers.wall = block
     }
 
     set block(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Block', true)
+            validateInstance(block, Block, 'Block')
         }
         this.#layers.block = block
     }
