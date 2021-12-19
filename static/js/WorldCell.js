@@ -1,13 +1,15 @@
-import { validateInstance, validateFinite, isPositiveInteger } from './dataValidator.js'
+import { validateInstance, isPositiveInteger } from './dataValidator.js'
 import Block from './Block.js'
 import Texture from './Texture.js'
 
 export default class WorldCell {
+    static #LIGHT_LEVEL = 0
+
     #layers = {
         background: null,
         wall: null,
         block: null,
-        lightLevel: 0
+        lightLevel: WorldCell.#LIGHT_LEVEL
     }
 
     #texture = new Texture().create((ctx, canvas, params) => {
@@ -53,33 +55,29 @@ export default class WorldCell {
         ctx.fillRect(0, 0, canvas.width, canvas.height)
     })
 
-    constructor() {
-
-    }
-
     get texture() { return this.#texture }
     get background() { return this.#layers.background }
     get wall() { return this.#layers.wall }
     get block() { return this.#layers.block }
-    get lightLevel() { return this.#layers.lightLevel }
+    get lightLevel() { return 1 - this.#layers.lightLevel }
 
     set background(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Background')
+            validateInstance(block, Block, 'Background', true)
         }
         this.#layers.background = block
     }
 
     set wall(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Wall')
+            validateInstance(block, Block, 'Wall', true)
         }
         this.#layers.wall = block
     }
 
     set block(block) {
         if (block !== null) {
-            validateInstance(block, Block, 'Block')
+            validateInstance(block, Block, 'Block', true)
         }
         this.#layers.block = block
     }
@@ -89,7 +87,16 @@ export default class WorldCell {
             throw new Error(`Light level must be finite number from 0 to 1. Received: ${value}`)
         }
 
-        this.#layers.lightLevel = -value
+        this.#layers.lightLevel = 1 - value
         this.#texture.update()
+    }
+
+    static get LIGHT_LEVEL() { return 1 - this.#LIGHT_LEVEL }
+    static set LIGHT_LEVEL(value) {
+        if (!Number.isFinite(value) || value < 0 || value > 1) {
+            throw new Error(`Light level must be finite number from 0 to 1. Received: ${value}`)
+        }
+
+        this.#LIGHT_LEVEL = 1 - value
     }
 }
