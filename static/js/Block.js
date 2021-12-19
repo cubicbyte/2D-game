@@ -9,15 +9,19 @@ export default class Block {
         }
     
         if (!worldData.worldMatrix[x][y + 1].block) {
-            worldData.moveBlock(x, y, x, y + 1)
-
-            if (y + 2 < worldData.height && worldData.worldMatrix[x][y + 2].block) {
-                worldData.updateNearestBlocks(x, y + 2)
+            if (worldData.worldMatrix[x][y + 1].block) {
+                worldData.updateNearestBlocks(x, y + 1)
             }
+
+            worldData.moveBlock(x, y, x, y + 1)
         }
     }
 
-    constructor() {
+    constructor(eventListeners = []) {
+        eventListeners.forEach(listener => {
+            this.event.addEventListener('update', listener.bind(this))
+        })
+
         this.event.addEventListener('update', this.#updateGravity.bind(this))
     }
 
