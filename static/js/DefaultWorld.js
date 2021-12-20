@@ -83,8 +83,8 @@ export default class DefaultWorld extends World {
         }
 
         #updateNearestBlocks(x, y) {
-            for (let i = x - 1; i < x + 1; i++) {
-                for (let j = y - 1; j < y + 1; j++) {
+            for (let i = x - 1; i <= x + 1; i++) {
+                for (let j = y - 1; j <= y + 1; j++) {
                     if (!isWithinMatrix(this.#worldMatrix, i, j)) {
                         continue
                     }
