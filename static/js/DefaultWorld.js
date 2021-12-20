@@ -106,7 +106,7 @@ export default class DefaultWorld extends World {
             const key = `pos:${x}.${y}`
             const registeredPositions = this.#update.updateBuffer.map(object => object.key)
 
-            if (registeredPositions.includes(key)) {
+            if (registeredPositions.includes(key) || !cell) {
                 return false
             }
 

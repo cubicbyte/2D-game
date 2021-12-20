@@ -15,7 +15,7 @@ export default function convertObject(object) {
             
             if (typeof value === 'function') {
                 properties['set'] = newValue => {
-                    newObject[key] = value(newValue)
+                    newObject[key] = value.bind(newObject)(newValue)
                 }
 
                 newObject[key] = object.hasOwnProperty(`_${key}`) ? object[`_${key}`] : null
