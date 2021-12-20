@@ -20,6 +20,10 @@ import Grass from './blocks/Grass.js'
 import Air from './blocks/Air.js'
 import { isWithinMatrix } from './dataValidator.js'
 
+
+const WORLD_WIDTH = 48
+const WORLD_HEIGHT = 32
+
 const progress = document.querySelector('.loader progress')
 const progressTitle = document.querySelector('.loader p')
 
@@ -55,8 +59,8 @@ progressTitle.innerText = 'Генерация мира...'
 const world = new DefaultWorld({
     parameters: {
         size: {
-            width: 48,
-            height: 32
+            width: WORLD_WIDTH,
+            height: WORLD_HEIGHT
         }
     }
 })
@@ -225,6 +229,16 @@ GUIRenderer.canvas.addEventListener('click', event => {
     if (event.altKey) {
         if (cell.block === null) {
             world.worldData.placeBlock(...cellIndex, new Water())
+            return
+        }
+
+        if (cell.block.constructor === Water) {
+            const water = new Water()
+
+            cell.block.properties.level = Math.min(cell.block.properties.level + water.properties.level, Water.MAX_LEVEL)
+            cell.block.texture.update()
+            cell.texture.update()
+            world.worldData.updateNearestBlocks(...cellIndex)
         }
     } else if (event.shiftKey) {
         if (cell.block === null) {
