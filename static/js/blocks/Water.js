@@ -15,6 +15,11 @@ export default class Water extends Block {
         ) {
             return false
         }
+        
+        if (this.properties.level === 0) {
+            worldData.removeBlock(x, y)
+            return true
+        }
 
         const cellBelow = worldData.worldMatrix[x][y + 1]
 
@@ -25,30 +30,72 @@ export default class Water extends Block {
         if (cellBelow.block instanceof Water) {
             if (cellBelow.block.properties.level < Water.MAX_LEVEL) {
                 const level = cellBelow.block.properties.level + this.properties.level - 1000
-                if (level > 0) {
-                    cellBelow.block.properties.level = 1000
-                    this.properties.level = level
-                    this.texture.update()
-                } else {
+                if (level < 0) {
                     cellBelow.block.properties.level += this.properties.level
                     worldData.removeBlock(x, y)
+                    cellBelow.block.texture.update()
+                    cellBelow.texture.update()
+                    return true
                 }
+
+                cellBelow.block.properties.level = 1000
+                this.properties.level = level
+                this.texture.update()
 
                 cellBelow.block.texture.update()
                 cellBelow.texture.update()
-                
-                return true
             }
         }
 
         if (this.properties.level === Water.LEVEL_STEP) {
             return false
         }
+
+        function updateNearestWaterBlocks() {
+            for (let i = x - 1; i <= x + 1; i++) {
+                for (let j = y - 1; j <= y + 1; j++) {
+                    if (
+                        i < 0 ||
+                        j < 0 ||
+                        i >= worldData.width ||
+                        j >= worldData.height ||
+                        (i === x && j === x)
+                    ) {
+                        continue
+                    }
+
+                    const block = worldData.worldMatrix[i][j].block
+
+                    if (
+                        !block ||
+                        block.constructor !== Water
+                    ) {
+                        continue
+                    }
+
+                    worldData.updateCell(i, j)
+                }
+            }
+        }
         
         const leftBlock = x - 1 < 0 || worldData.worldMatrix[x - 1][y].block
         const rightBlock = x + 1 >= worldData.width || worldData.worldMatrix[x + 1][y].block
 
-        if ((leftBlock === null || (leftBlock instanceof Water && leftBlock.properties.level < this.properties.level)) && (rightBlock === null || (rightBlock instanceof Water && rightBlock.properties.level < this.properties.level))) {
+        if (
+            (
+                leftBlock === null
+                || (
+                    leftBlock instanceof Water
+                    && leftBlock.properties.level + Water.LEVEL_STEP < this.properties.level
+                )
+            ) && (
+                rightBlock === null
+                || (
+                    rightBlock instanceof Water
+                    && rightBlock.properties.level + Water.LEVEL_STEP < this.properties.level
+                )
+            )
+        ) {
             let leftWaterLevel = leftBlock === null ? 0 : leftBlock.properties.level
             let rightWaterLevel = rightBlock === null ? 0 : rightBlock.properties.level
             let waterLevel = this.properties.level
@@ -70,6 +117,10 @@ export default class Water extends Block {
                 } else {
                     rightWaterLevel += Water.LEVEL_STEP
                 }
+            }
+
+            if (window.enableLog) {
+                console.log(1, x, y, leftBlock?.properties.level, this.properties.level, rightBlock?.properties.level)
             }
 
             let leftWater = leftBlock
@@ -97,9 +148,86 @@ export default class Water extends Block {
             worldData.worldMatrix[x - 1][y].texture.update()
             worldData.worldMatrix[x + 1][y].texture.update()
 
-            worldData.updateCell(x - 1, y)
-            worldData.updateCell(x + 1, y)
+            updateNearestWaterBlocks()
             
+            return true
+        }
+
+        if (
+            leftBlock === null
+            || (
+                leftBlock instanceof Water
+                && leftBlock.properties.level + Water.LEVEL_STEP < this.properties.level
+            )
+        ) {
+            let leftWaterLevel = leftBlock === null ? 0 : leftBlock.properties.level
+            let waterLevel = this.properties.level
+            
+            const levelSum = (leftWaterLevel + waterLevel)
+            const avgLevel = levelSum / 2
+
+            leftWaterLevel = avgLevel
+            waterLevel = avgLevel
+
+            if (levelSum % (Water.LEVEL_STEP * 2) === Water.LEVEL_STEP) {
+                waterLevel += Water.LEVEL_STEP
+            }
+
+            let leftWater = leftBlock
+
+            if (leftBlock === null) {
+                leftWater = new Water(leftWaterLevel)
+                worldData.placeBlock(x - 1, y, leftWater)
+            } else {
+                leftBlock.properties.level = leftWaterLevel
+                leftBlock.texture.update()
+            }
+
+            this.properties.level = waterLevel
+            this.texture.update()
+            
+            worldData.worldMatrix[x - 1][y].texture.update()
+            updateNearestWaterBlocks()
+            
+            return true
+        }
+
+        if (
+            rightBlock === null
+            || (
+                rightBlock instanceof Water
+                && rightBlock.properties.level + Water.LEVEL_STEP < this.properties.level
+            )
+        ) {
+            let rightWaterLevel = rightBlock === null ? 0 : rightBlock.properties.level
+            let waterLevel = this.properties.level
+            
+            const levelSum = (rightWaterLevel + waterLevel)
+            const avgLevel = levelSum / 2
+
+            rightWaterLevel = avgLevel
+            waterLevel = avgLevel
+
+            if (levelSum % (Water.LEVEL_STEP * 2) === Water.LEVEL_STEP) {
+                waterLevel += Water.LEVEL_STEP
+            }
+
+            let rightWater = rightBlock
+
+            if (rightBlock === null) {
+                rightWater = new Water(rightWaterLevel)
+                worldData.placeBlock(x + 1, y, rightWater)
+            } else {
+                rightBlock.properties.level = rightWaterLevel
+                rightBlock.texture.update()
+            }
+
+            this.properties.level = waterLevel
+            this.texture.update()
+            
+            worldData.worldMatrix[x + 1][y].texture.update()
+            updateNearestWaterBlocks()
+
             return true
         }
     }
@@ -124,18 +252,7 @@ export default class Water extends Block {
     })
 
     constructor(level = Water.MAX_LEVEL - Water.LEVEL_STEP * 2) {
-        function removeEmpty(type, worldData, x, y) {
-            if (type !== 'block') {
-                return false
-            }
-            
-            if (this.properties.level === 0) {
-                worldData.removeBlock(x, y)
-                return true
-            }
-        }
-
-        super([removeEmpty, Water.#update])
+        super([Water.#update])
         this.#properties.level = level
 
         this.#texture = new Texture().create((ctx, canvas, params) => {
