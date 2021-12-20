@@ -1,5 +1,4 @@
-import { isPositiveInteger, validateIntegerRange } from '../dataValidator.js'
-import convertObject from '../convertObject.js'
+import { isPositiveInteger } from '../dataValidator.js'
 import Block from '../Block.js'
 import Texture from '../Texture.js'
 
@@ -242,18 +241,18 @@ export default class Water extends Block {
     })
 
     #texture
-    #properties = convertObject({
-        _hasGravity: true,
-        _level: value => {
-            value -= value % Water.LEVEL_STEP
-            validateIntegerRange(value, Water.MIN_LEVEL, Water.MAX_LEVEL, 'Water level')
-            return value
-        }
-    })
 
     constructor(level = Water.MAX_LEVEL - Water.LEVEL_STEP * 2) {
-        super([Water.#update])
-        this.#properties.level = level
+        super({
+            properties: {
+                hasGravity: true,
+                minLevel: Water.MIN_LEVEL,
+                maxLevel: Water.MAX_LEVEL,
+                levelStep: Water.LEVEL_STEP,
+                level
+            },
+            onupdate: [Water.#update]
+        })
 
         this.#texture = new Texture().create((ctx, canvas, params) => {
             if (!isPositiveInteger(params.size)) {
@@ -263,7 +262,7 @@ export default class Water extends Block {
             canvas.width = params.size
             canvas.height = params.size
 
-            const levelK = Math.floor(params.size * (this.properties.level / Water.MAX_LEVEL))
+            const levelK = Math.floor(params.size * (this.properties.level / this.properties.maxLevel))
 
             ctx.fillStyle = '#4444ee'
             ctx.fillRect(0, params.size - levelK, params.size, levelK)
@@ -271,7 +270,6 @@ export default class Water extends Block {
     }
 
     get texture() { return this.#texture }
-    get properties() { return this.#properties }
     
     static get texture() { return this.#DEFAULT_TEXTURE }
     static get MIN_LEVEL() { return this.#MIN_LEVEL }

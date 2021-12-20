@@ -5,10 +5,6 @@ import Texture from '../Texture.js'
 import Dirt from './Dirt.js'
 
 export default class Grass extends Block {
-    #properties = {
-        hasGravity: false
-    }
-
     static #DEFAULT_TEXTURE = new Texture().create(function(ctx, canvas, params) {
         if (!isPositiveInteger(params.size)) {
             params.size = 16
@@ -39,7 +35,6 @@ export default class Grass extends Block {
     })
 
     get texture() { return Grass.texture }
-    get properties() { return this.#properties }
     
     static get texture() { return this.#DEFAULT_TEXTURE }
 }

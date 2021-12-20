@@ -4,10 +4,6 @@ import Block from '../Block.js'
 import Texture from '../Texture.js'
 
 export default class Dirt extends Block {
-    #properties = {
-        hasGravity: false
-    }
-
     static #DEFAULT_TEXTURE = new Texture().create(function(ctx, canvas, params) {
         if (!isPositiveInteger(params.size)) {
             params.size = 16
@@ -44,7 +40,6 @@ export default class Dirt extends Block {
     })
 
     get texture() { return Dirt.texture }
-    get properties() { return this.#properties }
     
     static get texture() { return this.#DEFAULT_TEXTURE }
 }
