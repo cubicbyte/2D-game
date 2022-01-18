@@ -1,18 +1,41 @@
-import { validateString, validateFunction } from './dataValidator.js'
+import { validateString, validateFunction, validateInstance } from './dataValidator.js'
 
 export default class EventHandler {
+    #allowedEvents
     #event = {}
+
+    constructor(allowedEvents = []) {
+        validateInstance(allowedEvents, Array, 'Allowed events')
+
+        allowedEvents.map(
+            event => {
+                validateString(event, 'Event')
+                
+                event = event.toLowerCase()
+                this.#event[event] = {
+                    listeners: new Set(),
+                    handler: function() {}
+                }
+
+                return event
+            }
+        )
+
+        this.#allowedEvents = new Set(allowedEvents)
+    }
+
+    #validateEvent(event) {
+        if (!this.#allowedEvents.has(event)) {
+            throw new Error(`Unregistered event: ${event}`)
+        }
+    }
 
     addEventListener(event, listener) {
         validateString(event, 'Event name')
         validateFunction(listener, 'Event listener')
 
         event = event.toLowerCase()
-
-        if (!this.#event[event]) this.#event[event] = {
-            listeners: new Set(),
-            handler: null
-        }
+        this.#validateEvent(event)
         
         this.#event[event].listeners.add(listener)
         return listener
@@ -23,11 +46,7 @@ export default class EventHandler {
         validateFunction(handler, 'Event handler')
 
         event = event.toLowerCase()
-
-        if (!this.#event[event]) this.#event[event] = {
-            listeners: new Set(),
-            handler: null
-        }
+        this.#validateEvent(event)
         
         this.#event[event].handler = handler
         return handler
@@ -38,10 +57,7 @@ export default class EventHandler {
         validateFunction(listener, 'Event listener')
 
         event = event.toLowerCase()
-
-        if (!this.#event[event]) {
-            return false
-        }
+        this.#validateEvent(event)
 
         return this.#event[event].listeners.delete(listener)
     }
@@ -50,11 +66,8 @@ export default class EventHandler {
         validateString(event, 'Event name')
 
         event = event.toLowerCase()
-
-        if (!this.#event[event]) {
-            return new Set()
-        }
-
+        this.#validateEvent(event)
+        
         return this.#event[event].listeners
     }
 
@@ -62,14 +75,7 @@ export default class EventHandler {
         validateString(event, 'Event name')
 
         event = event.toLowerCase()
-
-        if (!this.#event[event]) {
-            return function() {}
-        }
-
-        if (!this.#event[event].handler) {
-            return function() {}
-        }
+        this.#validateEvent(event)
 
         return this.#event[event].handler
     }
