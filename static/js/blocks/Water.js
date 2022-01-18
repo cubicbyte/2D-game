@@ -118,10 +118,6 @@ export default class Water extends Block {
                 }
             }
 
-            if (window.enableLog) {
-                console.log(1, x, y, leftBlock?.properties.level, this.properties.level, rightBlock?.properties.level)
-            }
-
             let leftWater = leftBlock
             let rightWater = rightBlock
 
