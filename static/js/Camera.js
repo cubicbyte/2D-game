@@ -9,6 +9,8 @@ export default class Camera {
         static #renderers = new Set()
         static #renderersContainer = null
         static #parameters = class {
+            static #MAX_ZOOM = 10
+            static #MIN_ZOOM = 0.5
             static #enabled = true
             static #zoom = this.defaultZoom
 
@@ -17,6 +19,14 @@ export default class Camera {
             static get enabled() { return this.#enabled }
             static set zoom(value) {
                 validateFinite(value, 'Zoom')
+
+                if (value < this.#MIN_ZOOM) {
+                    value = this.#MIN_ZOOM
+                }
+                else if (value > this.#MAX_ZOOM) {
+                    value = this.#MAX_ZOOM
+                }
+                
                 this.#zoom = value.toFixed(2)
             }
             static set enabled(flag) {
@@ -108,6 +118,7 @@ export default class Camera {
         }
 
         return new Renderer(function(ctx, canvas) {
+            ctx.imageSmoothingEnabled = false
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
             const zoom = camera.rendering.parameters.zoom
@@ -145,7 +156,6 @@ export default class Camera {
                     const cellY = j * 16 - y % 16 - 16
 
                     drawImage(ctx, zoom, cell.texture.texture, cellX, cellY)
-                    // ctx.fillText(`${cellIndex.x} ${cellIndex.y}`, (cellX + 5) * zoom, (cellY + 10) * zoom)
                 }
             }
         })
