@@ -3,7 +3,7 @@ import { validateInstance, validateObject, validateIntegerRange, validatePositiv
 import EventHandler from './Event.js'
 
 export default class Block {
-    #event = new EventHandler()
+    #event = new EventHandler([ 'update' ])
     
     #updateGravity(type, worldData, x, y) {
         if (type !== 'block' || !this.properties.hasGravity || y + 1 >= worldData.height) {

@@ -14,7 +14,7 @@ export default class DefaultWorld extends World {
                 static #DEFAULT_UPDATE_PERIOD = 1000/20
                 static get DEFAULT_UPDATE_PERIOD() { return this.#DEFAULT_UPDATE_PERIOD }
     
-                #event = new EventHandler()
+                #event = new EventHandler([ 'update' ])
                 #updatePeriod = this.constructor.DEFAULT_UPDATE_PERIOD
                 #updateInterval = null
                 #enabled = false
