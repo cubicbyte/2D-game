@@ -20,9 +20,6 @@ import Grass from './blocks/Grass.js'
 import Air from './blocks/Air.js'
 import { isWithinMatrix } from './dataValidator.js'
 import LocalServer from './localServer/LocalServer.js'
-window.LocalServer = LocalServer
-window.server = new LocalServer()
-//window.server.CommunicationInterface.EventHandler.addEventListener('state', console.log)
 
 const WORLD_WIDTH = 48
 const WORLD_HEIGHT = 32
