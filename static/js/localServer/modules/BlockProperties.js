@@ -1,7 +1,7 @@
 import { validateBoolean, validateIntegerRange, validatePositiveInteger, validateString } from './dataValidator.js'
 
 export default class BlockProperties {
-    #blockName = null
+    #name = null
     #level = 0
     #minLevel = 0
     #maxLevel = 0
@@ -9,7 +9,7 @@ export default class BlockProperties {
     #hasGravity = false
     #falling = false
 
-    get blockName() { return this.#blockName }
+    get name() { return this.#name }
     get level() { return this.#level }
     get minLevel() { return this.#minLevel }
     get maxLevel() { return this.#maxLevel }
@@ -17,9 +17,9 @@ export default class BlockProperties {
     get hasGravity() { return this.#hasGravity }
     get falling() { return this.#falling }
 
-    set blockName(value) {
+    set name(value) {
         validateString(value, 'Block name')
-        this.#blockName = value
+        this.#name = value
     }
 
     set level(value) {
