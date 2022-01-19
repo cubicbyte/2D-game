@@ -14,7 +14,7 @@ export default class Block {
             validateInstance(params.onupdate, Array, 'Update listeners')
 
             params.onupdate.forEach(listener => {
-                this.event.addEventListener('update', listener.bind(this))
+                this.event.addEventListener('update', listener)
             })
         }
 
