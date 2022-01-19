@@ -1,4 +1,3 @@
-import convertObject from '../convertObject.js'
 import { isPositiveInteger, validateBoolean } from '../dataValidator.js'
 import Block from '../Block.js'
 import Texture from '../Texture.js'
