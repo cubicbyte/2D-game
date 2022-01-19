@@ -11,44 +11,44 @@ export default class ObjectSet extends Set {
     constructor(superClass, ...rest) {
         super(...rest)
         this.#superClass = superClass
-    }
 
-    add(object) {
-        validateInstance(object, this.#superClass)
-
-        const addHandler = this.EventHandler.getEventHandler('add')
-        const result = addHandler(object, this)
-
-        if (result === false) {
-            return false
-        }
-
-        this.#add(object)
-        this.EventHandler.getEventListeners('add').forEach(
-            listener => listener(object, this)
-        )
-
-        return true
-    }
-
-    delete(object) {
-        const result = this.#delete(object)
-
-        if (result) {
-            const deleteHandler = this.EventHandler.getEventHandler('delete')
-            const result = deleteHandler(object, this)
-
+        this.add = function(object) {
+            validateInstance(object, this.#superClass)
+        
+            const addHandler = this.EventHandler.getEventHandler('add')
+            const result = addHandler(object, this)
+        
             if (result === false) {
                 return false
             }
-
-            this.#delete()
-
-            this.EventHandler.getEventListeners('delete').forEach(
+        
+            this.#add(object)
+            this.EventHandler.getEventListeners('add').forEach(
                 listener => listener(object, this)
             )
+        
+            return true
         }
 
-        return result
+        this.delete = function(object) {
+            const result = this.#delete(object)
+
+            if (result) {
+                const deleteHandler = this.EventHandler.getEventHandler('delete')
+                const result = deleteHandler(object, this)
+
+                if (result === false) {
+                    return false
+                }
+
+                this.#delete()
+
+                this.EventHandler.getEventListeners('delete').forEach(
+                    listener => listener(object, this)
+                )
+            }
+
+            return result
+        }
     }
 }
