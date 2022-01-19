@@ -16,7 +16,7 @@ export default class Buffer {
 
     constructor(tickRate, eventHandler) {
         this.#parameters = new BufferParameters(tickRate)
-        this.#parameters.event.setEventHandler('update', eventHandler)
+        this.#parameters.EventHandler.setEventHandler('update', eventHandler)
     }
 
     get event() { return this.#event }
