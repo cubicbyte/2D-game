@@ -1,21 +1,25 @@
 export function gravity(type, worldData, x, y) {
-    if (type !== 'block' || !this.properties.hasGravity || y + 1 >= worldData.height) {
+    if (
+        type !== 'block'
+        || !this.properties.hasGravity
+        || y + 1 >= worldData.height
+        || worldData.worldMatrix[x][y + 1].block
+    ) {
         return false
     }
 
-    if (!worldData.worldMatrix[x][y + 1].block) {
-        if (!this.properties.falling) {
-            this.properties.falling = true
-            worldData.updateNearestBlocks(x, y)
-        }
-        
-        if (y + 2 < worldData.height && worldData.worldMatrix[x][y + 2].block) {
-            this.properties.falling = false
-            worldData.updateNearestBlocks(x, y + 2)
-        }
-
-        worldData.moveBlock(x, y, x, y + 1)
+    if (!this.properties.falling) {
+        this.properties.falling = true
+        worldData.updateNearestBlocks(x, y)
     }
+    
+    if (y + 2 < worldData.height && worldData.worldMatrix[x][y + 2].block) {
+        this.properties.falling = false
+        worldData.updateNearestBlocks(x, y + 2)
+    }
+
+    worldData.moveBlock(x, y, x, y + 1)
+    return true
 }
 
 export function liquid(type, worldData, x, y) {
@@ -23,18 +27,18 @@ export function liquid(type, worldData, x, y) {
         type !== 'block' ||
         y + 1 >= worldData.height
     ) {
-        return
+        return false
     }
     
     if (this.properties.level === 0) {
         worldData.removeBlock(x, y)
-        return
+        return true
     }
 
     const cellBelow = worldData.worldMatrix[x][y + 1]
 
     if (!cellBelow.block) {
-        return
+        return false
     }
 
     if (cellBelow.block instanceof this.constructor) {
@@ -43,7 +47,7 @@ export function liquid(type, worldData, x, y) {
             if (level < 0) {
                 cellBelow.block.properties.level += this.properties.level
                 worldData.removeBlock(x, y)
-                return
+                return true
             }
 
             cellBelow.block.properties.level = 1000
@@ -52,7 +56,7 @@ export function liquid(type, worldData, x, y) {
     }
 
     if (this.properties.level === this.constructor.LEVEL_STEP) {
-        return
+        return false
     }
 
     function updateNearestWaterBlocks() {
@@ -142,8 +146,8 @@ export function liquid(type, worldData, x, y) {
 
         this.properties.level = waterLevel
         updateNearestWaterBlocks()
-        
-        return
+
+        return true
     }
 
     if (
@@ -177,8 +181,8 @@ export function liquid(type, worldData, x, y) {
 
         this.properties.level = waterLevel
         updateNearestWaterBlocks()
-        
-        return
+
+        return true
     }
 
     if (
@@ -212,5 +216,9 @@ export function liquid(type, worldData, x, y) {
 
         this.properties.level = waterLevel
         updateNearestWaterBlocks()
+
+        return true
     }
+
+    return false
 }
