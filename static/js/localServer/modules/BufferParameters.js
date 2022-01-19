@@ -2,14 +2,15 @@ import { validateBoolean, validatePositiveInteger } from './dataValidator.js'
 import EventHandler from './Event.js'
 
 export default class BufferParameters {
-    #event = new EventHandler([ 'update' ])
     #updatePeriod = null
     #updateInterval = null
     #enabled = false
 
+    EventHandler = new EventHandler([ 'update' ])
+
     constructor(tickRate = 0) {
         validatePositiveInteger(tickRate, 'Tick rate')
-        
+
         this.updatePeriod = 1000 / tickRate
         this.enabled = true
     }
@@ -32,13 +33,12 @@ export default class BufferParameters {
 
         this.#updateInterval = setInterval(this.#update.bind(this), this.#updatePeriod)
     }
-    
+
     #update() {
-        const updateFunction = this.#event.getEventHandler('update')
+        const updateFunction = this.EventHandler.getEventHandler('update')
         updateFunction()
     }
 
-    get event() { return this.#event }
     get updatePeriod() { return this.#updatePeriod }
     get enabled() { return this.#enabled }
 
