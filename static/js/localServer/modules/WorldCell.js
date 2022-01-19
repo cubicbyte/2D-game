@@ -10,24 +10,42 @@ export default class WorldCell {
 
     update(worldData, x, y) {
         const { background, wall, block } = this.#layers
+        let updated = false
 
         if (background) {
             background.event.getEventListeners('update').forEach(
-                updateFunction => updateFunction('background', worldData, x, y)
+                updateFunction => {
+                    const result = updateFunction('background', worldData, x, y)
+                    if (result) {
+                        updated = true
+                    }
+                }
             )
         }
 
         if (wall) {
             wall.event.getEventListeners('update').forEach(
-                updateFunction => updateFunction('wall', worldData, x, y)
+                updateFunction => {
+                    const result = updateFunction('wall', worldData, x, y)
+                    if (result) {
+                        updated = true
+                    }
+                }
             )
         }
 
         if (block) {
             block.event.getEventListeners('update').forEach(
-                updateFunction => updateFunction('block', worldData, x, y)
+                updateFunction => {
+                    const result = updateFunction('block', worldData, x, y)
+                    if (result) {
+                        updated = true
+                    }
+                }
             )
         }
+
+        return updated
     }
 
     get background() { return this.#layers.background }
