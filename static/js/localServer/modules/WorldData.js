@@ -3,13 +3,15 @@ import { validatePositiveInteger, validateWithinMatrix, validateInstance, isWith
 import UpdateBuffer from './UpdateBuffer.js'
 import Player from './Player.js'
 import ObjectSet from './ObjectSet.js'
+import EventHandler from './Event.js'
 
 export default class WorldData {
     #width = null
     #height = null
     #worldMatrix = null
-    #update = new UpdateBuffer(20)
 
+    EventHandler = new EventHandler([ 'cell_update' ])
+    UpdateBuffer = new UpdateBuffer(20)
     Players = new ObjectSet(Player)
 
     #updateNearestBlocks(x, y) {
@@ -34,15 +36,25 @@ export default class WorldData {
     #updateCell(x, y) {
         const cell = this.#worldMatrix[x][y]
         const key = `pos:${x}.${y}`
-        const registeredPositions = this.#update.buffer.map(object => object.key)
+        const registeredPositions = this.UpdateBuffer.buffer.map(object => object.key)
 
         if (registeredPositions.includes(key) || !cell) {
             return false
         }
 
-        this.#update.add({
+        this.UpdateBuffer.add({
             key,
-            callback: () => cell.update(this, x, y)
+            callback: () => {
+                const result = cell.update(this, x, y)
+
+                if (!result) {
+                    return
+                }
+
+                this.EventHandler.getEventListeners('cell_update').forEach(
+                    listener => listener(x, y)
+                )
+            }
         })
     }
 
@@ -105,7 +117,6 @@ export default class WorldData {
         this.#moveBlock(x1, y1, x2, y2, noUpdate)
     }
 
-    get update() { return this.#update }
     get width() { return this.#width }
     get height() { return this.#height }
     get worldMatrix() { return this.#worldMatrix }
