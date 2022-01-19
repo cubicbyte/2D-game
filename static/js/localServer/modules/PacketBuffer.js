@@ -9,12 +9,7 @@ export default class PacketBuffer extends Buffer {
             const state = new State()
         
             for (const packet of this.buffer) {
-                switch (packet.type) {
-                    case 'chat':
-                        state.chat.push(packet.data)
-                        break
-                }
-
+                state[packet.type].push(packet.data)
                 this.delete(packet)
             }
 
