@@ -8,6 +8,7 @@ export default class Player extends Entity {
     #name = null
 
     constructor(name = null) {
+        super()
         this.name = name
     }
 
