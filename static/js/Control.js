@@ -3,8 +3,7 @@ export default class Control {
     #keys
     #keyDownListener
     #keyUpListener
-    #speedX
-    #speedY
+    #speed
     #running
     #interval
     #element
@@ -18,8 +17,7 @@ export default class Control {
 
         this.#object = params.object
         this.#updateInterval = 4
-        this.#speedX = 2
-        this.#speedY = 2
+        this.#speed = 2
         this.#running = false
         this.#element = document.body
         this.#keys = {
@@ -48,10 +46,8 @@ export default class Control {
             this.#object.x = 0
         if (!Number.isInteger(Math.floor(params.object.y)))
             this.#object.y = 0
-        if (Number.isInteger(Math.floor(params.speedX)))
-            this.#speedX = params.speedX
-        if (Number.isInteger(Math.floor(params.speedY)))
-            this.#speedY = params.speedY
+        if (Number.isInteger(Math.floor(params.speed)))
+            this.#speed = params.speed
         if (Number.isInteger(params.interval) && params.interval > 0)
             this.#updateInterval = params.interval
         
@@ -105,15 +101,14 @@ export default class Control {
     }
 
     update() {
-        if (this.#keys.top.pressed) this.#object.y -= this.#speedY
-        if (this.#keys.right.pressed) this.#object.x += this.#speedX
-        if (this.#keys.down.pressed) this.#object.y += this.#speedY
-        if (this.#keys.left.pressed) this.#object.x -= this.#speedX
+        if (this.#keys.top.pressed) this.#object.y -= this.#speed
+        if (this.#keys.right.pressed) this.#object.x += this.#speed
+        if (this.#keys.down.pressed) this.#object.y += this.#speed
+        if (this.#keys.left.pressed) this.#object.x -= this.#speed
     }
 
     get object() { return this.#object }
-    get speedX() { return this.#speedX }
-    get speedY() { return this.#speedY }
+    get speed() { return this.#speed }
     get running() { return this.#running }
     get element() { return this.#element }
     get updateInterval() { return this.#updateInterval }
@@ -129,18 +124,11 @@ export default class Control {
         this.#object = object
     }
 
-    set speedX(speed) {
-        if (!Number.isInteger(~speed))
+    set speed(speed) {
+        if (!Number.isFinite(speed))
             throw new TypeError("Invalid speed")
         
-        this.#speedX = speed
-    }
-
-    set speedY(speed) {
-        if (!Number.isInteger(~speed))
-            throw new TypeError("Invalid speed")
-        
-        this.#speedY = speed
+        this.#speed = speed
     }
 
     set element(element) {
