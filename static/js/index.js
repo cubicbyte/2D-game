@@ -183,6 +183,15 @@ cameraStick.element = GUIRenderer.canvas
 cameraStick.x = 120
 cameraStick.y = GUIRenderer.canvas.height - 120
 
+const CAMERA_SPEED = 6
+
+cameraControl.speed = CAMERA_SPEED / camera.rendering.parameters.zoom
+camera.rendering.parameters.EventHandler.addEventListener('zoomchange',
+    zoom => {
+        cameraControl.speed = CAMERA_SPEED / zoom
+    }
+)
+
 let picked = Dirt
 let cursorPosition = [0, 0]
 
