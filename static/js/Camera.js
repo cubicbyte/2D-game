@@ -1,4 +1,5 @@
 import { validateObject, validateFinite, validateInstance, validateBoolean } from './dataValidator.js'
+import EventHandler from './Event.js'
 import Position from './Position.js'
 import Renderer from './Renderer.js'
 import World from './World.js'
@@ -9,6 +10,8 @@ export default class Camera {
         static #renderers = new Set()
         static #renderersContainer = null
         static #parameters = class {
+            static EventHandler = new EventHandler(['zoomchange', 'statechange'])
+
             static #MAX_ZOOM = 10
             static #MIN_ZOOM = 0.5
             static #enabled = true
@@ -26,8 +29,14 @@ export default class Camera {
                 else if (value > this.#MAX_ZOOM) {
                     value = this.#MAX_ZOOM
                 }
+
+                value = Number(value.toFixed(2))
+
+                this.EventHandler
+                    .getEventListeners('zoomchange')
+                    .forEach(listener => listener(value, this.#zoom))
                 
-                this.#zoom = value.toFixed(2)
+                this.#zoom = value
             }
             static set enabled(flag) {
                 validateBoolean(flag, 'Rendering state')
