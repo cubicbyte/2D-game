@@ -11,7 +11,7 @@ export default class CommunicationInterface {
             .forEach(listener => listener(state))
     )
 
-    EventHandler = new EventHandler([ 'outcoming-state', 'incoming-state' ])
+    EventHandler = new EventHandler(['outcoming-state', 'incoming-state'])
 
     handleIncomingState(state) {
         const isStateValid = State.Validate(state)
