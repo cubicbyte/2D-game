@@ -1,7 +1,4 @@
 certificate/certificate.crt
 certificate/private.key
 workspace.code-workspace
-package-lock.json
-package.json
-node_modules/*
 static/count.js
