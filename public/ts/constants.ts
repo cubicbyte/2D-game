@@ -1,0 +1,2 @@
+export const DEFAULT_BLOCK_SIZE = 16
+export const DEFAULT_BLOCK_COLOR = '#000000'

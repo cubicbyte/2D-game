@@ -1,0 +1,1 @@
+type TextureImage = HTMLImageElement | HTMLCanvasElement

@@ -1,0 +1,1 @@
+type WorldMatrix = Array<Array<import('../WorldCell').default>>

@@ -1,0 +1,3 @@
+interface CameraParameters {
+    renderersContainer?: HTMLElement
+}
