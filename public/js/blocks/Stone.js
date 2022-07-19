@@ -4,7 +4,7 @@ import Texture from '../Texture.js'
 export default class Stone extends Block {
     static #DEFAULT_TEXTURE = new Texture()
     static async LoadTexture() {
-        await this.#DEFAULT_TEXTURE.loadFromUrl('/images/stone.jpg')
+        await this.#DEFAULT_TEXTURE.loadFromUrl('/public/images/stone.jpg')
         delete this.LoadTexture
     }
 

@@ -4,7 +4,7 @@ import Texture from '../Texture.js'
 export default class Bedrock extends Block {
     static #DEFAULT_TEXTURE = new Texture()
     static async LoadTexture() {
-        await this.#DEFAULT_TEXTURE.loadFromUrl('/images/bedrock.jpg')
+        await this.#DEFAULT_TEXTURE.loadFromUrl('/public/images/bedrock.jpg')
         delete this.LoadTexture
     }
 

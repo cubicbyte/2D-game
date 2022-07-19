@@ -4,7 +4,7 @@ import Texture from '../Texture.js'
 export default class Leaves extends Block {
     static #DEFAULT_TEXTURE = new Texture()
     static async LoadTexture() {
-        await this.#DEFAULT_TEXTURE.loadFromUrl('/images/leaves.jpg')
+        await this.#DEFAULT_TEXTURE.loadFromUrl('/public/images/leaves.jpg')
         delete this.LoadTexture
     }
 

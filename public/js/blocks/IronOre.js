@@ -4,7 +4,7 @@ import Texture from '../Texture.js'
 export default class IronOre extends Block {
     static #DEFAULT_TEXTURE = new Texture()
     static async LoadTexture() {
-        await this.#DEFAULT_TEXTURE.loadFromUrl('/images/iron_ore.jpg')
+        await this.#DEFAULT_TEXTURE.loadFromUrl('/public/images/iron_ore.jpg')
         delete this.LoadTexture
     }
 

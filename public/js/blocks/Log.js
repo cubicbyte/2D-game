@@ -4,7 +4,7 @@ import Texture from '../Texture.js'
 export default class Log extends Block {
     static #DEFAULT_TEXTURE = new Texture()
     static async LoadTexture() {
-        await this.#DEFAULT_TEXTURE.loadFromUrl('/images/log.jpg')
+        await this.#DEFAULT_TEXTURE.loadFromUrl('/public/images/log.jpg')
         delete this.LoadTexture
     }
 
