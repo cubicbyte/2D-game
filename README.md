@@ -10,7 +10,7 @@
 
 1. Run next command:
 ```bash
-    npm run start
+    npm install
 ```
 2. Visit the address you see in console
-   <br>`Default:` http://localhost:8080
+   <br>`Default:` http://127.0.0.1:3000
