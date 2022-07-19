@@ -1,11 +1,16 @@
 # Installation
 
-1. Download repository
-2. If this is an initial setup, follow the instructions below:
+1. Download Node.js + npm
+2. Run next command:
+```shell
+    npm run setup
+```
 
-    * Install python 3.*
-    * Install module flask (in command shell run command pip install flask)
-  
-3. Run file web_server.py
-4. Visit the address you specified in the web_server.config file
-   <br>Default: http://localhost:8080
+# Starting
+
+1. Run next command:
+```bash
+    npm run start
+```
+2. Visit the address you see in console
+   <br>`Default:` http://localhost:8080

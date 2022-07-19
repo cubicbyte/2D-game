@@ -1,4 +1,2 @@
-certificate/certificate.crt
-certificate/private.key
+node_modules
 workspace.code-workspace
-static/count.js
