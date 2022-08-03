@@ -1,7 +1,7 @@
 import EventHandler from './utils/eventHandler.js'
 
 export default class WorldUpdateParameters {
-    static readonly DEFAULT_UPDATE_PERIOD = 1000/20
+    static readonly DEFAULT_UPDATE_PERIOD = 1000/2
     
     private _updatePeriod: number = WorldUpdateParameters.DEFAULT_UPDATE_PERIOD
     private _updateInterval?: ReturnType<typeof setInterval>

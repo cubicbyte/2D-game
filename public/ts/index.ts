@@ -17,10 +17,29 @@ import Grass from './blocks/Grass.js'
 import Air from './blocks/Air.js'
 import isWithinMatrix from './utils/isWithinMatrix.js'
 import World from './World.js'
+import declareGlobalVar from './declareGlobalVar.js'
 
 import { DefaultWorld } from './defaultWorld.js'
 import { DefaultWorld as DefaultWorldGenerator } from './worldGenerators.js'
 import Block from './block.js'
+
+
+/**
+ * 
+ * TODO:
+ * 
+ * 1. На данный момент world update buffer принимает в роли уникального ключа позицию
+ * обновляемой ячейки. Это плохо, так как допустим следующую ситуацию:
+ * 
+ * У нас в буффере есть записи для 2 ячеек: 1:1 и 1:2.
+ * Если обновится блок в ячейке 1:1, после чего
+ * он переместится в ячейку 1:2, то при обновлении соотвествующей
+ * ячейки этот блок обновится повторно, в одной сессии обновления.
+ * 
+ * 
+ * 
+ */
+
 
 function getElement<T extends HTMLElement>(selector: string): T {
     const element: T | null = document.querySelector(selector)
@@ -93,6 +112,8 @@ function getElement<T extends HTMLElement>(selector: string): T {
 
     const world = new DefaultWorld.World()
 
+    declareGlobalVar('world', world)
+
     let current = 0
     let accuracy = 0.05
     await world.worldData.generateWorld(WORLD_WIDTH, WORLD_HEIGHT, DefaultWorldGenerator.Generator.create({
@@ -106,7 +127,9 @@ function getElement<T extends HTMLElement>(selector: string): T {
         groundAltitudeOffset: 0
     }))
 
-    world.worldData.setBlock(4, 4, new Water())
+    const water = new Sand()
+    world.worldData.setBlock(4, 4, water)
+    console.log(water)
 
     console.log(`Генерация мира окончена. Время: ${Date.now() - start}мс`)
 
@@ -146,18 +169,24 @@ function getElement<T extends HTMLElement>(selector: string): T {
 
     const hzCounter = new HZCounter()
     const worldRenderer = Camera.DefaultWorldRenderer(world, camera)
-    const GUIRenderer = new Renderer(function({ ctx, canvas, clearCanvas }) {
+    const GUIRenderer = new Renderer(({ ctx, canvas, clearCanvas }) => {
+        const infoText = [
+            `FPS: ${hzCounter.hz}`,
+            `Zoom: ${camera.rendering.parameters.zoom}`,
+            `X: ${camera.position.x}`,
+            `Y: ${camera.position.y}`,
+            `Cursor: ${getCellIndex(...cursorPosition)}`,
+            `Update_buffer: ${world.worldData.update.updateBuffer.size}`
+        ]
+
         clearCanvas()
 
+        const TEXT_PADDING = 15
         ctx.fillStyle = '#000000'
-        ctx.fillText(`
-        FPS: ${hzCounter.hz}
-        Zoom: ${camera.rendering.parameters.zoom}
-        X: ${camera.position.x}
-        Y: ${camera.position.y}
-        Cursor: ${getCellIndex(...cursorPosition)}
-        Update_buffer: ${world.worldData.update.updateBuffer.length}
-        `, 5, 15)
+
+        infoText.forEach((text, i) => {
+            ctx.fillText(text, TEXT_PADDING, TEXT_PADDING * i + TEXT_PADDING)
+        })
 
         cameraControl.update()
         hzCounter.update()
@@ -184,8 +213,8 @@ function getElement<T extends HTMLElement>(selector: string): T {
             texture.height,
             x,
             y,
-            texture.width,
-            texture.height
+            texture.width * 4,
+            texture.height * 4
         )
     })
 
@@ -336,14 +365,7 @@ function getElement<T extends HTMLElement>(selector: string): T {
         const wrapper = getElement('.canvas-wrapper')
 
         wrapper.style.width = innerWidth + 'px'
-        wrapper.style.height = innerHeight - 1 + 'px'
-        /**
-         * 
-         * TODO:
-         * Это что за костыль с -1px,
-         * когда можно будет - посмотреть
-         * 
-         */
+        wrapper.style.height = innerHeight + 'px'
 
         wrapper.querySelectorAll('canvas').forEach(canvas => {
             canvas.width = innerWidth
@@ -354,9 +376,4 @@ function getElement<T extends HTMLElement>(selector: string): T {
     })
 
     getElement('.loader').style.display = 'none'
-
-    /*camera.position.moveBy(world.worldData.width * 8, world.worldData.height * 8)
-    camera.rendering.parameters.zoom = 0.5
-    await sleep(100)
-    camera.rendering.parameters.enabled = false*/
 }()

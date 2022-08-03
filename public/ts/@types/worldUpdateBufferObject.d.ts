@@ -1,4 +1,4 @@
 interface WorldUpdateBufferObject {
-    key: string
+    key: any
     callback()
 }

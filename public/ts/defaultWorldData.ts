@@ -103,14 +103,14 @@ export default class DefaultWorldData {
 
     public update = new WorldUpdate()
 
-    public updateNearestBlocks(x: number, y: number): boolean {
+    public updateNearestBlocks(x: number, y: number, updateCenter = true): boolean {
         if (!this._worldMatrix) {
             return false
         }
 
         for (let i = x - 1; i <= x + 1; i++) {
             for (let j = y - 1; j <= y + 1; j++) {
-                if (!isWithinMatrix(this._worldMatrix, i, j)) {
+                if (!isWithinMatrix(this._worldMatrix, i, j) || (!updateCenter && i === x && j === y)) {
                     continue
                 }
 
@@ -131,14 +131,14 @@ export default class DefaultWorldData {
         }
 
         const cell = this.getCell(x, y)
-        const key = `pos:${x}.${y}`
-        const registeredPositions = this.update.updateBuffer.map(object => object.key)
+        const key = cell
+        const registeredPositions = Array.from(this.update.updateBuffer).map(object => object.key)
 
         if (registeredPositions.includes(key) || !cell) {
             return false
         }
 
-        this.update.addToBuffer({
+        this.update.updateBuffer.add({
             key,
             callback: () => {
                 const params: BlockUpdateParameters = {

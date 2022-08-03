@@ -9,15 +9,15 @@ export function gravity(this: Block, { world, x, y }: BlockUpdateParameters): bo
     ) {
         return false
     }
-
+        
     if (!this.properties.falling) {
         this.properties.falling = true
         world.worldData.updateNearestBlocks(x, y)
     }
-    
-    if (y + 2 < world.worldData.height && world.worldData.getBlock(x, y + 2)) {
+
+    if (world.worldData.getBlock(x, y + 2)) {
         this.properties.falling = false
-        world.worldData.updateNearestBlocks(x, y + 2)
+        //world.worldData.updateNearestBlocks(x, y + 1)
     }
 
     world.worldData.moveBlock(x, y, x, y + 1)
@@ -41,7 +41,7 @@ export function liquid(this: Block, { world, x, y }: BlockUpdateParameters): boo
         return false
     }
     
-    if (this.properties.level === 0) {
+    if (this.properties.level || 0 <= 0) {
         world.worldData.removeBlock(x, y)
         return true
     }
