@@ -1,8 +1,8 @@
 import Block from '../block.js'
 import Texture from '../Texture.js'
 
-export default class IronOre extends Block {
-    public static readonly TEXTURE_URL = '/public/images/iron_ore.jpg'
+export default class Stone extends Block {
+    public static readonly TEXTURE_URL = '/static/images/stone.jpg'
     public static readonly DEFAULT_TEXTURE = new Texture()
 
     public static async LoadTexture?() {
@@ -11,8 +11,8 @@ export default class IronOre extends Block {
     }
 
     public readonly properties: BlockProperties = {
-        id: 'main:iron_ore'
+        id: 'main:stone'
     }
 
-    public get texture() { return IronOre.DEFAULT_TEXTURE }
+    public get texture() { return Stone.DEFAULT_TEXTURE }
 }

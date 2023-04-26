@@ -2,7 +2,7 @@ import Block from '../block.js'
 import Texture from '../Texture.js'
 
 export default class Leaves extends Block {
-    public static readonly TEXTURE_URL = '/public/images/leaves.jpg'
+    public static readonly TEXTURE_URL = '/static/images/leaves.jpg'
     public static readonly DEFAULT_TEXTURE = new Texture()
 
     public static async LoadTexture?() {

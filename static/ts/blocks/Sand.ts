@@ -1,12 +1,13 @@
 import Block from '../block.js'
 import Texture from '../Texture.js'
 
-export default class Bedrock extends Block {
-    public static readonly TEXTURE_URL = '/public/images/bedrock.jpg'
+export default class Sand extends Block {
+    public static readonly TEXTURE_URL = '/static/images/sand.jpg'
     public static readonly DEFAULT_TEXTURE = new Texture()
 
     public readonly properties: BlockProperties = {
-        id: 'main:bedrock'
+        id: 'main:sand',
+        hasGravity: true
     }
 
     public static async LoadTexture?() {
@@ -14,5 +15,5 @@ export default class Bedrock extends Block {
         delete this.LoadTexture
     }
 
-    public get texture() { return Bedrock.DEFAULT_TEXTURE }
+    public get texture() { return Sand.DEFAULT_TEXTURE }
 }
