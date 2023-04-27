@@ -5,3 +5,10 @@ interface EventHandlerInterface {
     getEventListeners(event: string): Set<Function>
     getEventHandler(event: string): Function | null
 }
+
+interface StoredEvents {
+    [event: string]: {
+        listeners: Set<Function>
+        handler: Function | null
+    }
+}

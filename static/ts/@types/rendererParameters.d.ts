@@ -1,3 +1,0 @@
-interface RendererParameters {
-    renderingFunction: RenderingFunction
-}

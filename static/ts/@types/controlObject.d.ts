@@ -1,1 +1,0 @@
-interface ControlObject extends Point2D {}
