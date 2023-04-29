@@ -7,7 +7,7 @@ export default class WorldUpdateParameters {
     private _updateInterval?: ReturnType<typeof setInterval>
     private _enabled: boolean = false
     
-    public event = new EventHandler([ 'update' ])
+    event = new EventHandler([ 'update' ])
     
     constructor() {
         this.enabled = true
@@ -36,15 +36,15 @@ export default class WorldUpdateParameters {
         updateFunction()
     }
 
-    public get updatePeriod() { return this._updatePeriod }
-    public get enabled() { return this._enabled }
+    get updatePeriod() { return this._updatePeriod }
+    get enabled() { return this._enabled }
 
-    public set updatePeriod(value: number) {
+    set updatePeriod(value: number) {
         this._updatePeriod = value
         this._updateState()
     }
 
-    public set enabled(flag: boolean) {
+    set enabled(flag: boolean) {
         this._enabled = flag
         this._updateState()
     }

@@ -18,7 +18,6 @@ import Air from './blocks/Air.js'
 import isWithinMatrix from './utils/isWithinMatrix.js'
 import World from './World.js'
 
-import { DefaultWorld } from './defaultWorld.js'
 import { DefaultWorld as DefaultWorldGenerator } from './worldGenerators.js'
 import Block from './block.js'
 
@@ -91,7 +90,7 @@ function getElement<T extends HTMLElement>(selector: string): T {
     console.log('Генерация мира...')
     progressTitle.innerText = 'Генерация мира...'
 
-    const world = new DefaultWorld.World()
+    const world = new World()
 
     let current = 0
     let accuracy = 0.05

@@ -7,7 +7,7 @@ export default class Texture {
         public parameters: TextureParameters = {}
     ) {}
 
-    public static CreateImage(generator: TextureGenerator, params: TextureParameters = {}): TextureImage {
+    static CreateImage(generator: TextureGenerator, params: TextureParameters = {}): TextureImage {
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
 
@@ -40,7 +40,7 @@ export default class Texture {
         return canvas
     }
 
-    public static async LoadFromUrl(url: string): Promise<HTMLImageElement> {
+    static async LoadFromUrl(url: string): Promise<HTMLImageElement> {
         return new Promise((resolve, reject) => {
             const img = new Image()
     
@@ -53,7 +53,7 @@ export default class Texture {
         })
     }
 
-    public create(generator: TextureGenerator): Texture {
+    create(generator: TextureGenerator): Texture {
         const texture = Texture.CreateImage(generator, this.parameters)
 
         this._texture = texture
@@ -63,7 +63,7 @@ export default class Texture {
         return this
     }
 
-    public async loadFromUrl(url: string): Promise<Texture> {
+    async loadFromUrl(url: string): Promise<Texture> {
         const image = await Texture.LoadFromUrl(url)
 
         this._texture = image
@@ -73,7 +73,7 @@ export default class Texture {
         return this
     }
 
-    public async update(params?: TextureParameters) {
+    async update(params?: TextureParameters) {
         if (params) {
             for (const key in params) {
                 this.parameters[key] = params[key]
@@ -87,9 +87,9 @@ export default class Texture {
         }
     }
 
-    public get texture(): TextureImage { return this._texture }
+    get texture(): TextureImage { return this._texture }
 
-    public set texture(image: TextureImage) {
+    set texture(image: TextureImage) {
         this._texture = image
         this._generator = null
         this._url = null

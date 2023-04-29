@@ -3,9 +3,9 @@ import Texture from './Texture.js'
 import EventHandler from './utils/eventHandler.js'
 
 export default abstract class Block {
-    public event = new EventHandler([ 'update' ])
-    public abstract properties: BlockProperties
-    public abstract get texture(): Texture
+    event = new EventHandler([ 'update' ])
+    abstract properties: BlockProperties
+    abstract get texture(): Texture
 
     constructor() {
         this.event.addEventListener('update', gravity.bind(this))

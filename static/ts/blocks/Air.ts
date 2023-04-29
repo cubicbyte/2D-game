@@ -17,11 +17,11 @@ export default class Air extends Block {
         setBackground(params.color)
     }
 
-    public readonly properties: BlockProperties = {
+    readonly properties: BlockProperties = {
         id: 'main:air'
     }
 
-    public static readonly DEFAULT_TEXTURE = new Texture({ color: '#87CEEB' }).create(this._TextureGenerator)
+    static readonly DEFAULT_TEXTURE = new Texture({ color: '#87CEEB' }).create(this._TextureGenerator)
 
     get texture() { return Air.DEFAULT_TEXTURE }
 }

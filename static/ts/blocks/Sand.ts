@@ -2,18 +2,18 @@ import Block from '../block.js'
 import Texture from '../Texture.js'
 
 export default class Sand extends Block {
-    public static readonly TEXTURE_URL = '/static/images/sand.jpg'
-    public static readonly DEFAULT_TEXTURE = new Texture()
+    static readonly TEXTURE_URL = '/static/images/sand.jpg'
+    static readonly DEFAULT_TEXTURE = new Texture()
 
-    public readonly properties: BlockProperties = {
+    readonly properties: BlockProperties = {
         id: 'main:sand',
         hasGravity: true
     }
 
-    public static async LoadTexture?() {
+    static async LoadTexture?() {
         await this.DEFAULT_TEXTURE.loadFromUrl(this.TEXTURE_URL)
         delete this.LoadTexture
     }
 
-    public get texture() { return Sand.DEFAULT_TEXTURE }
+    get texture() { return Sand.DEFAULT_TEXTURE }
 }

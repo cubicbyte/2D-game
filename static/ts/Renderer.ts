@@ -28,7 +28,7 @@ export default class Renderer {
         this._ctx = ctx
     }
 
-    public render() {
+    render() {
         const params: RenderingFunctionParameters = {
             ctx: this._ctx,
             canvas: this._canvas,
@@ -40,11 +40,11 @@ export default class Renderer {
         this._renderingFunction(params)
     }
 
-    public get canvas() { return this._canvas }
-    public get ctx() { return this._ctx }
-    public get renderingFunction() { return this._renderingFunction }
+    get canvas() { return this._canvas }
+    get ctx() { return this._ctx }
+    get renderingFunction() { return this._renderingFunction }
 
-    public set canvas(element: HTMLCanvasElement) {
+    set canvas(element: HTMLCanvasElement) {
         this._canvas = element
         const ctx = this._canvas.getContext('2d')
 
@@ -62,7 +62,7 @@ export default class Renderer {
         this._ctx = ctx
     }
 
-    public set renderingFunction(renderingFunction: RenderingFunction) {
+    set renderingFunction(renderingFunction: RenderingFunction) {
         this._renderingFunction = renderingFunction
     }
 }

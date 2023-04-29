@@ -3,8 +3,8 @@ export default class Control {
     private _interval?: ReturnType<typeof setInterval>
     private _updateInterval: number = 4
 
-    public speed: number = 2
-    public object: ControlObject
+    speed: number = 2
+    object: ControlObject
 
     private _keys: ControlKeys = {
         top: { key: 'KeyW', pressed: false },
@@ -34,7 +34,7 @@ export default class Control {
         if (event.code === this._keys.left.key) this._keys.left.pressed = false
     }
 
-    public start() {
+    start() {
         if (this._running) {
             return new Error('Control is already running')
         }
@@ -43,7 +43,7 @@ export default class Control {
         this._interval = setInterval(this.update.bind(this), this._updateInterval)
     }
 
-    public stop() {
+    stop() {
         if (!this._running) {
             return new Error('Control is already stopped')
         }
@@ -52,14 +52,14 @@ export default class Control {
         clearInterval(this._interval)
     }
 
-    public remove() {
+    remove() {
         document.body.removeEventListener('keydown', this._keyDownListener)
         document.body.removeEventListener('keyup', this._keyUpListener)
 
         clearInterval(this._interval)
     }
 
-    public update() {
+    update() {
         if (this._keys.top.pressed) this.object.y -= this.speed
         if (this._keys.right.pressed) this.object.x += this.speed
         if (this._keys.down.pressed) this.object.y += this.speed

@@ -20,7 +20,7 @@ export default class CameraRendering {
         requestAnimationFrame(this._render.bind(this))
     }
 
-    public addRenderer(renderer: Renderer) {
+    addRenderer(renderer: Renderer) {
         this._renderers.add(renderer)
 
         if (this._renderersContainer) {
@@ -31,14 +31,14 @@ export default class CameraRendering {
         }
     }
 
-    public removeRenderer(renderer: Renderer): boolean {
+    removeRenderer(renderer: Renderer): boolean {
         return this._renderers.delete(renderer)
     }
 
-    public get renderersContainer() { return this._renderersContainer }
-    public get parameters() { return this._parameters }
+    get renderersContainer() { return this._renderersContainer }
+    get parameters() { return this._parameters }
 
-    public set renderersContainer(element: HTMLElement) {
+    set renderersContainer(element: HTMLElement) {
         this._renderersContainer = element
         this._renderers.forEach(renderer => {
             renderer.canvas.width = this._renderersContainer.offsetWidth

@@ -4,8 +4,8 @@ import Renderer from './Renderer.js'
 import World from './World.js'
 
 export default class Camera {
-    public readonly position = new Position()
-    public readonly rendering = new CameraRendering()
+    readonly position = new Position()
+    readonly rendering = new CameraRendering()
 
     private static WheelHandler(this: Camera, event: WheelEvent) {
         const dx = event.deltaX
@@ -24,11 +24,11 @@ export default class Camera {
         document.body.addEventListener('wheel', Camera.WheelHandler.bind(this))
     }
 
-    public static DefaultWorldRenderer(world: World, camera: Camera) {
+    static DefaultWorldRenderer(world: World, camera: Camera) {
         return new Renderer(this.DefaultWorldRenderingFunction.bind(this, world, camera))
     }
 
-    public static DefaultWorldRenderingFunction( world: World, camera: Camera, { ctx, canvas, clearCanvas }: RenderingFunctionParameters) {
+    static DefaultWorldRenderingFunction( world: World, camera: Camera, { ctx, canvas, clearCanvas }: RenderingFunctionParameters) {
         clearCanvas()
         ctx.imageSmoothingEnabled = false
 

@@ -27,35 +27,35 @@ export default class EventHandler {
         }
     }
 
-    public addEventListener(event: string, listener: Function) {
+    addEventListener(event: string, listener: Function) {
         event = event.toLowerCase()
         this.validateEvent(event)
         
         this._storedEvents[event].listeners.add(listener)
     }
 
-    public setEventHandler(event: string, handler: Function) {
+    setEventHandler(event: string, handler: Function) {
         event = event.toLowerCase()
         this.validateEvent(event)
         
         this._storedEvents[event].handler = handler
     }
 
-    public removeEventListener(event: string, listener: Function): boolean {
+    removeEventListener(event: string, listener: Function): boolean {
         event = event.toLowerCase()
         this.validateEvent(event)
 
         return this._storedEvents[event].listeners.delete(listener)
     }
 
-    public getEventListeners(event: string): Set<Function> {
+    getEventListeners(event: string): Set<Function> {
         event = event.toLowerCase()
         this.validateEvent(event)
         
         return this._storedEvents[event].listeners
     }
 
-    public getEventHandler(event: string): Function | null {
+    getEventHandler(event: string): Function | null {
         event = event.toLowerCase()
         this.validateEvent(event)
 

@@ -4,7 +4,7 @@ export default class WorldUpdate {
     private _parameters = new WorldUpdateParameters()
     private _updateBuffer = new Set<WorldUpdateBufferObject>()
 
-    public addToBuffer(object: WorldUpdateBufferObject) {
+    addToBuffer(object: WorldUpdateBufferObject) {
         this._updateBuffer.add(object)
     }
 
@@ -21,6 +21,6 @@ export default class WorldUpdate {
         this._parameters.event.setEventHandler('update', this._update.bind(this))
     }
 
-    public get updateBuffer() { return Array.from(this._updateBuffer) }
-    public get parameters() { return this._parameters }
+    get updateBuffer() { return Array.from(this._updateBuffer) }
+    get parameters() { return this._parameters }
 }

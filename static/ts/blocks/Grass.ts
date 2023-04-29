@@ -5,7 +5,7 @@ import Dirt from './Dirt.js'
 import { DEFAULT_BLOCK_COLOR, DEFAULT_BLOCK_SIZE } from '../constants.js'
 
 export default class Grass extends Block {
-    public static readonly DEFAULT_TEXTURE = new Texture({ color: '#117c13' })
+    static readonly DEFAULT_TEXTURE = new Texture({ color: '#117c13' })
         .create(({ ctx, params, setSize }) => {
             if (params.size === undefined) {
                 params.size = DEFAULT_BLOCK_SIZE
@@ -41,7 +41,7 @@ export default class Grass extends Block {
             }
         })
 
-    public readonly properties: BlockProperties = {
+    readonly properties: BlockProperties = {
         id: 'main:grass'
     }
     
