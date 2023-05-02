@@ -1,0 +1,7 @@
+{
+    "manifestVersion": 1,
+    "version": "1.0.0",
+    "name": "Game",
+    "description": "This is the main game datapack",
+    "entrypoint": "src/index.js"
+}

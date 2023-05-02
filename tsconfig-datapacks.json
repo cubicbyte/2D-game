@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./game/datapacks",
+    "outDir": "./game/datapacks",
+    "paths": {
+      "/game/js/*.js": ["./game/js/*.js"]
+    }
+  },
+  "include": ["./game/datapacks/**/*.ts"],
+  "exclude": ["./game/datapacks/**/*.d.ts", "./game/datapacks/**/*.js"]
+}

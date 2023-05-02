@@ -1,5 +1,7 @@
 node_modules
 .env
 
-static/js
+game/js
+game/datapacks/**/*.js
+
 *.code-workspace
