@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "build": "tsc --project tsconfig-game.json | tsc --project tsconfig-datapacks.json",
-    "test": "npm run build | npm start",
+    "build": "tsc --project tsconfig-game.json && tsc --project tsconfig-datapacks.json",
+    "test": "npm run build || echo Datapack build failed && npm start",
     "setup": "npm install | npm run build"
   },
   "author": "",
